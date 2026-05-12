@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayur Leaf</title>
+    <!--styles-->
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <section id="hero">
+        <div class="section-box">
+            <div class="content-wrap">
+                <header>
+                    <div class="navbar-container">
+                        <div class="navbar-left">
+                            <div class="header-logo">
+                                <!-- Logo image -->
+                                <a href="index.html" class="logo-link">
+                                    <img src="logo.jpg" class="logo-img" alt="Logo">
+                                    <span>AYUR</span> LEAF
+                                </a>
+                            </div>
+                        </div>
+                        <div class="navbar-center">
+                            <nav>
+                                <a class="nav-items active" href="index.html">Home</a>
+                                <a class="nav-items" href="aboutus.html">About Us</a>
+                                <a class="nav-items" href="shop.html">Shop</a>
+                                <a class="nav-items" href="contact.html">Contact</a>
+                            </nav>
+                        </div>
+                        <div class="navbar-right">
+                            <div class="search-bar">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search" class="search-input">
+                            </div>
+                            <button class="profile-btn" onclick="toggleProfileDropdown()">
+                                <i class="fas fa-user"></i>
+                            </button>
+                            <!-- Profile Dropdown -->
+                            <div class="profile-dropdown" id="profileDropdown">
+                                <div class="dropdown-content" id="dropdownContent">
+                                    <!-- Content will be dynamically updated based on auth state -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="hero-content">
+                    <h3>PURE</h3>
+                    <h1>Essence</h1>
+                    <img src="home.png" class="hero-img">
+                    <a href="shop.html" class="hero-btn">Shop Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="about" class="animate-on-scroll">
+        <div class="section-box">
+            <div class="content-grid">
+                <div class="left-grid">
+                    <h3 class="section-sub">About Us</h3>
+                    <h2 class="section-title">Who We Are</h2>
+                    <p>At Ayur Leaf, we believe that nature holds the power to heal, nourish, and restore everyday wellness. Our mission is to bring pure herbal and Ayurvedic products to every home through carefully sourced ingredients and trusted traditional practices. From herbal teas and skincare to natural supplements and wellness essentials, we focus on quality, authenticity, and sustainability. We are committed to helping people embrace a healthier lifestyle with products inspired by nature and crafted with care.</p>
+                    <button class="action-btn"><a href="aboutus.html" class="more-link">Learn More</a></button> <!-- Updated link -->
+                </div>
+                <div class="right-grid">
+                    <img src="tiger.jpg" class="about-img">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="programs" class="animate-on-scroll">
+        <div class="section-box">
+            <div class="content-wrap">
+                <h3 class="section-sub">PRODUCTS</h3>
+                <h2 class="section-title">Our Herbal Collections</h2>
+                
+                <div class="initiatives-grid">
+                    <div class="initiative-box" onclick="window.location.href='shop.html'">
+                        <img src="product2.jpg" class="initiative-img" alt="Transforming Learning Spaces">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Triphala Dry Extract</a></button>
+                    </div>
+                    <div class="initiative-box" onclick="window.location.href='shop.html'">
+                        <img src="product1.jpg" class="initiative-img" alt="Student Support Programs">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Mulethi Dry Extract</a></button>
+                    </div>
+                    <div class="initiative-box" onclick="window.location.href='shop.html'">
+                        <img src="product3.jpg" class="initiative-img" alt="Empowering Educators">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Ashwagandha Dry Extract</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="get-involved" class="animate-on-scroll">
+        <div class="section-box">
+            <div class="content-wrap">
+                <h3 class="section-sub">Stay Connected</h3>
+                <h2 class="section-title">Get Wellness Updates</h2>
+                <div class="join-form">
+                    <input type="text" class="input-1 i1" placeholder="Your Name" id="name"> 
+                    <input type="email" class="input-1 i2" placeholder="Your Email" id="email">
+                
+                    <p>Membership</p>
+                    <div class="checkbox-wrap">
+                        <label><input type="checkbox" id="volunteer">Herbal Tips</label>
+                        <label><input type="checkbox" id="sponsor">Exclusive Offers</label>
+                        <label><input type="checkbox" id="partner">New Arrivals</label>
+                    </div>
+                    <button class="join-btn" id="submit-btn">Suscribe Now !</button>
+                </div>                
+            </div>
+        </div>
+    </section>
+    
+    <section id="footer" class="animate-on-scroll">
+        <div class="section-box">
+            <div class="footer-grid">
+                <!-- Column 1: Brand Information -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Ayur Leaf</h3>
+                    <p class="footer-description">Natural wellness inspired by Ayurveda and crafted with pure herbal ingredients for everyday health and self-care.</p>
+                    <div class="contact-info">
+                        <p class="footer-contact-item"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
+                        <p class="footer-contact-item"><i class="fas fa-envelope"></i> support@ayurleaf.com</p>
+                        <p class="footer-contact-item"><i class="fas fa-phone"></i> +91 9876543210</p>
+                    </div>
+                </div>
+                
+                <!-- Column 2: Shop -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Shop</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Herbal Powders</a></li>
+                        <li><a href="#" class="footer-link">Wellness Teas</a></li>
+                        <li><a href="#" class="footer-link">Natural Supplements</a></li>
+                        <li><a href="#" class="footer-link">Skin & Body Care</a></li>
+                        <li><a href="#" class="footer-link">Immunity Boosters</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 3: Support -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Contact Us</a></li>
+                        <li><a href="#" class="footer-link">Shipping Policy</a></li>
+                        <li><a href="#" class="footer-link">Refund Policy</a></li>
+                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="#" class="footer-link">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 4: Stay Connected -->
+                <div class="footer-column">
+                    <h3 class="footer-heading">Stay Connected</h3>
+                    <p class="footer-description">Get herbal wellness tips, offers & new arrivals.</p>
+                    <div class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Enter your email">
+                        <button class="newsletter-btn">Subscribe</button>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright Section -->
+            <div class="copyright-section">
+                <p class="copyright">© 2026 Ayur Leaf. All Rights Reserved.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popup Modal -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+    <!-- Authentication Modals -->
+    <!-- Login Modal -->
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-modal-overlay" onclick="closeLoginModal()"></div>
+        <div class="auth-modal-content">
+            <button class="auth-modal-close" onclick="closeLoginModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <div class="auth-form">
+                <h2 class="auth-title">Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to your account</p>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" name="email" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="loginPassword" name="password" required placeholder="Enter your password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="auth-btn auth-btn-primary">Sign In</button>
+                </form>
+                
+                <div class="auth-switch">
+                    <p>Don't have an account? <a href="#" onclick="switchToRegister()">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="auth-modal" id="registerModal">
+        <div class="auth-modal-overlay" onclick="closeRegisterModal()"></div>
+        <div class="auth-modal-content">
+            <button class="auth-modal-close" onclick="closeRegisterModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <div class="auth-form">
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Join our wellness community</p>
+                
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" name="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" name="email" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="registerPassword" name="password" required placeholder="Create a password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="auth-btn auth-btn-primary">Create Account</button>
+                </form>
+                
+                <div class="auth-switch">
+                    <p>Already have an account? <a href="#" onclick="switchToLogin()">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

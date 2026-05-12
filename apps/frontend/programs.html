@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programs | Vidya Jyoti</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: "serif";
+            margin: 0;
+            padding: 0;
+            background-image: url('op.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #003366;
+            color: white;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .header-logo a {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 40px 90px; /* Add some padding around the container */
+        }
+
+        .sub-section-box {
+            background: rgba(255, 255, 255, 0.7); /* 70% transparent */
+            backdrop-filter: blur(10px); /* Blur effect */
+            margin-bottom: 30px; /* Increase gap between each box to 20px */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sub-section-box h2 {
+            color: #ffaa00;
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .sub-section-box p {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            color: #030303;
+            text-align: justify;
+        }
+
+        .sub-section-box ul {
+            padding-left: 20px;
+            list-style-type: none; /* Remove default list styling */
+        }
+
+        .sub-section-box ul li {
+            margin-bottom: 10px;
+            line-height: 1.2; /* Reduced line spacing */
+        }
+
+        .sub-section-box ul li h3 {
+            font-size: 1.8rem; /* 1 size bigger */
+            font-weight: bold; /* Make it bold */
+        }
+
+        .sub-section-box ul li p {
+            font-size: 1.4rem; /* 2 sizes smaller */
+            line-height: 1.2; /* Reduced line spacing */
+        }
+
+        .sub-section-box ul li p.objective {
+            font-size: 1.4rem; /* 2 sizes smaller */
+            font-weight: bold; /* Make it bold */
+        }
+
+        .sub-section-box ul li p.key-features {
+            font-size: 1.6rem; /* 1 size smaller */
+        }
+
+        .sub-section-box ul li ul {
+            padding-left: 40px; /* Indent nested list */
+            font-size: 1.4rem; /* 2 sizes smaller */
+        }
+
+        .sub-section-box img {
+            display: block;
+            margin: 20px auto;
+            width: 80vh;
+            height: 60vh;
+        }
+
+        .header-spacing {
+            margin-top: 50px; /* Adjust the value to increase the gap */
+        }
+
+        .three-column {
+            display: flex;
+            justify-content: space-between;
+            text-align: left;
+            text-decoration: none;
+        }
+
+        .three-column div {
+            flex: 1;
+            margin: 0 15px; /* Add spacing between columns */
+
+        }
+        .three-column div p a{
+            text-decoration: none; /* Remove underline from links */
+            color: inherit; /* Ensure link color matches text color */
+        }
+
+        .centered-text p {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        .sub-section-box img.initiative-img {
+            margin-top: 20px; /* Add margin to ensure space between text and image */
+        }
+    </style>
+</head>
+<body>
+    <div class="section-container">
+        <header>
+            <div class="header-logo">
+                <img src="logo.png" class="logo-img" alt="Logo">
+                <a href="index.html"><span>VIDYA</span> Jyoti</a>
+            </div>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="aboutus.html">About Us</a>
+                <a href="programs.html">Programs</a>
+                <a href="index.html#get-involved">Get Involved</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </header>
+        <div class="sub-section-box">
+            <h2>Our Programs</h2>
+            <ul>
+                <li>
+                    <h3>1. Community Learning Centers</h3>
+                    <p class="objective">Objective: Establish local centers where children can access free educational resources and support.</p>
+                    <p class="key-features">Key Features:</p>
+                    <ul>
+                        <li>Provide remedial classes for children who lag in academics.</li>
+                        <li>Facilitate access to books, computers, and online learning tools.</li>
+                        <li>Encourage peer learning and mentorship.</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>2. Teacher Training and Development</h3>
+                    <p class="objective">Objective: Empower educators with modern teaching techniques to enhance the learning experience.</p>
+                    <p class="key-features">Key Features:</p>
+                    <ul>
+                        <li>Workshops on child-centric teaching methods and digital tools.</li>
+                        <li>Regular feedback and mentorship programs for teachers.</li>
+                        <li>Promoting inclusive classroom strategies for diverse learners.</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>3. Tech for Education</h3>
+                    <p class="objective">Objective: Leverage technology to bridge the digital divide and improve learning outcomes.</p>
+                    <p class="key-features">Key Features:</p>
+                    <ul>
+                        <li>Distribute tablets and laptops preloaded with educational content.</li>
+                        <li>Provide internet access in underserved communities.</li>
+                        <li>Organize coding and STEM (Science, Technology, Engineering, and Mathematics) workshops.</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>4. Scholarships and Sponsorships</h3>
+                    <p class="objective">Objective: Offer financial assistance to ensure continued education for economically disadvantaged children.</p>
+                    <p class="key-features">Key Features:</p>
+                    <ul>
+                        <li>Cover tuition fees, uniforms, books, and transportation.</li>
+                        <li>Create a mentorship system to guide scholarship recipients.</li>
+                        <li>Provide incentives for academic excellence.</li>
+                    </ul>
+                </li>
+                <li>
+                    <h3>5. Life Skills and Career Guidance</h3>
+                    <p class="objective">Objective: Prepare children for a successful future by equipping them with essential life skills and career awareness.</p>
+                    <p class="key-features">Key Features:</p>
+                    <ul>
+                        <li>Conduct workshops on communication, critical thinking, and problem-solving.</li>
+                        <li>Arrange sessions with professionals for career counseling.</li>
+                        <li>Foster entrepreneurial skills through hands-on projects.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="sub-section-box">
+            <h2>Our Initiatives</h2>
+            <p> We are committed to transforming the lives of children by focusing on providing quality education, 
+                especially to those from underprivileged backgrounds. Our initiatives aim to bridge the educational
+                 gap by offering access to essential learning resources, modern teaching methodologies, and a 
+                 nurturing environment where children can thrive. By partnering with NGOs, we ensure that no 
+                 child is left behind due to financial constraints. Through community-driven efforts, scholarships,
+                  and after-school programs, we strive to empower children with the knowledge and skills needed to
+                   build a brighter future, fostering hope and breaking the cycle of poverty. Together, we are 
+                   building a foundation for an educated and empowered generation.
+            </p>
+            <img src="OurInitiatives.jpg" alt="Initiative Image" class="initiative-img">
+        </div>
+        <div class="sub-section-box">
+            <div class="three-column">
+                <div>
+                    <h2>Quick Links</h2>
+                    <p>
+                        <a href="index.html">Home</a><br>
+                        <a href="aboutus.html">About Us</a><br>
+                        <a href="programs.html">Programs</a><br>
+                        <a href="index.html#get-involved">Get Involved</a><br>
+                        <a href="resources.html">Resources</a><br>
+                        <a href="contact.html">Contact</a><br>
+                    </p>
+                </div>
+                <div>
+                    <h2>Contact Us</h2>
+                    <p>
+                        +91 911797373732<br>
+                        vidya@jyoti.org</a><br>
+                        123 Kranti Vihar, Eco City, 145678<br>
+                    </p>
+                </div>
+                <div>
+                    <h2>Follow Us</h2>
+                    <p>
+                        <span>Facebook</span><br>
+                        <span>Instagram</span><br>
+                        <span>YouTube</span><br>
+                        <span>LinkedIn</span><br>
+                        <span>Twitter</span><br>
+                    </p>
+                </div>
+            </div>
+            <div class="centered-text">
+                <p>VidyaJyoti © 2025<br> Isha Gupta</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

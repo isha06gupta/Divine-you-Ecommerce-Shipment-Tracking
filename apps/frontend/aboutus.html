@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Ayur Leaf</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('aboutus.webp');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between; /* Added to space out the nav links */
+            align-items: center;
+            background-color: #003366;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo img {
+            width: 50px; /* Adjust the size of the logo */
+            height: 50px;
+            margin-right: 10px; /* Add some space between the logo and text */
+        }
+
+        .header-logo a {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px; /* Add some spacing between nav links */
+            font-size: 1.2rem;
+        }
+
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 30px 20px; /* Add some padding around the container */
+        }
+
+        .sub-section-box {
+            background: rgba(255, 255, 255, 0.7); /* 70% transparent */
+            backdrop-filter: blur(10px); /* Blur effect */
+            margin-bottom: 20px; /* Increase gap between each box to 20px */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sub-section-box h2 {
+            color: #ffaa00; /* Heading color */
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 5px;
+        }
+
+        .sub-section-box p, .sub-section-box ul {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            color: #030303;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .sub-section-box ul {
+            padding-left: 40px;
+        }
+
+        .sub-section-box ul li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            cursor: pointer; /* Change cursor to pointer on hover */
+        }
+
+        .sub-section-box img {
+            display: block;
+            margin: 20px auto;
+            width: 80vh;
+            height: 60vh;
+        }
+
+        .header-spacing {
+            margin-top: 50px; /* Adjust the value to increase the gap */
+        }
+
+        .three-column {
+            display: flex;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .three-column div {
+            flex: 1;
+            margin: 0 15px; /* Add spacing between columns */
+        }
+
+        .three-column div p a {
+            text-decoration: none; /* Remove underline from links */
+            color: inherit; /* Ensure link color matches text color */
+        }
+
+        .three-column div p span,
+        .three-column div p a {
+            transition: text-shadow 0.3s;
+        }
+
+        .three-column div p span:hover,
+        .three-column div p a:hover {
+            text-shadow: 0px 0px 10px black; /* Add black glow effect on hover */
+        }
+
+        .three-column div p {
+            margin: 5px 0; /* Reduce spacing between items */
+        }
+
+        .three-column div p span.contact-number {
+            cursor: pointer; /* Change cursor to pointer for contact number */
+        }
+
+        .centered-text p {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        .sub-section-box img.initiative-img {
+            margin-top: 20px; /* Add margin to ensure space between text and image */
+        }
+    </style>
+</head>
+<body>
+    <div class="section-container">
+        <header>
+            <div class="header-logo">
+                <!-- Logo image -->
+                <img src="logo.jpg" class="logo-img" alt="Logo">
+                <a href="index.html"><span>AYUR</span> LEAF</a>
+            </div>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="aboutus.html">About Us</a>
+                <a href="shop.html">Shop</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </header>
+        <div class="header-spacing"></div>
+        <div class="sub-section-box">
+            <h2>Who We Are</h2>
+            <p>
+                At Ayur Leaf, we believe that nature holds the power to heal, nourish, and restore everyday wellness. Our mission is to bring pure herbal and Ayurvedic products to every home through carefully sourced ingredients and trusted traditional practices. We focus on quality, authenticity, and sustainability to help people embrace a healthier lifestyle naturally.
+            </p>
+        </div>
+        <div class="sub-section-box">
+            <h2>What We Do</h2>
+            <p>
+                Ayur Leaf specializes in:
+            </p>
+            <ul>
+                <li>Premium Ayurvedic wellness products</li>
+                <li>Herbal powders and immunity boosters</li>
+                <li>Natural skincare and body care essentials</li>
+                <li>Wellness teas and traditional herbal remedies</li>
+            </ul>
+            <img src="herbal-products.jpg" alt="Ayur Leaf Herbal Products">
+        </div>
+        <div class="sub-section-box">
+            <h2>Our Vision</h2>
+            <p>
+                Our vision is to make natural wellness a part of everyday life by combining traditional Ayurvedic knowledge with modern lifestyles. We aim to build trust through purity, quality, and products inspired by nature.
+            </p>
+        </div>
+        <div class="sub-section-box">
+            <h2>Why Choose Us</h2>
+            <p>
+                Thousands of customers trust Ayur Leaf for:
+            </p>
+            <ul>
+                <li>Naturally sourced herbal ingredients</li>
+                <li>Premium quality wellness products</li>
+                <li>Trusted Ayurvedic-inspired formulations</li>
+                <li>A commitment to healthy and sustainable living</li>
+            </ul>
+        </div>
+        <div class="sub-section-box">
+            <h2>Join Our Wellness Journey</h2>
+            <p>
+                Explore the benefits of herbal wellness with Ayur Leaf. Whether you are looking for daily wellness support, natural self-care, or Ayurvedic lifestyle products, we are here to help you embrace a healthier way of living.
+            </p>
+        </div>
+        <div class="sub-section-box">
+            <div class="three-column">
+                <div>
+                    <h2>Ayur Leaf</h2>
+                    <p>
+                        Natural wellness inspired by Ayurveda and crafted with pure herbal ingredients for everyday health and self-care.
+                    </p>
+                    <p>
+                        New Delhi, India<br>
+                        support@ayurleaf.com<br>
+                        +91 9876543210
+                    </p>
+                </div>
+                <div>
+                    <h2>Shop</h2>
+                    <p>
+                        <a href="#">Herbal Powders</a><br>
+                        <a href="#">Wellness Teas</a><br>
+                        <a href="#">Natural Supplements</a><br>
+                        <a href="#">Skin & Body Care</a><br>
+                        <a href="#">Immunity Boosters</a><br>
+                    </p>
+                </div>
+                <div>
+                    <h2>Stay Connected</h2>
+                    <p>
+                        <span>Instagram</span><br>
+                        <span>Facebook</span><br>
+                        <span>YouTube</span><br>
+                    </p>
+                </div>
+            </div>
+            <div class="centered-text">
+                <p>© 2026 Ayur Leaf. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

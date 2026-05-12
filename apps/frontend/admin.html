@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ayur Leaf</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="logo.jpg" alt="Ayur Leaf" class="logo">
+                <div class="brand-info">
+                    <span class="brand-name">AYUR LEAF</span>
+                    <span class="admin-title">Admin Dashboard</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Search orders, customers...">
+                    <button class="clear-search-btn" id="clearGlobalSearch" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="admin-profile">
+                    <div class="profile-info">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrator</span>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Dashboard Summary Cards -->
+        <section class="summary-section">
+            <div class="summary-cards">
+                <div class="summary-card total-orders">
+                    <div class="card-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Total Orders</h3>
+                        <p class="card-value" id="totalOrdersCount">0</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card pending-orders">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Pending Orders</h3>
+                        <p class="card-value" id="pendingOrdersCount">0</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card shipped-orders">
+                    <div class="card-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Shipped Orders</h3>
+                        <p class="card-value" id="shippedOrdersCount">0</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card delivered-orders">
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Delivered Orders</h3>
+                        <p class="card-value" id="deliveredOrdersCount">0</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card total-revenue">
+                    <div class="card-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Total Revenue</h3>
+                        <p class="card-value" id="totalRevenueAmount">$0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="statusFilter">Filter by Status:</label>
+                    <select id="statusFilter" onchange="filterOrders()">
+                        <option value="">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="packed">Packed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="out_for_delivery">Out for Delivery</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="refresh-btn" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Table Section -->
+        <section class="orders-section">
+            <div class="orders-header">
+                <h2>All Orders</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="table" onclick="toggleView('table')">
+                        <i class="fas fa-table"></i>
+                        Table
+                    </button>
+                    <button class="view-btn" data-view="cards" onclick="toggleView('cards')">
+                        <i class="fas fa-th-large"></i>
+                        Cards
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Table View -->
+            <div id="tableView" class="table-view">
+                <div class="table-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                                <th>Courier</th>
+                                <th>Shipment ID</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be dynamically rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Cards View -->
+            <div id="cardsView" class="cards-view" style="display: none;">
+                <div class="orders-cards" id="ordersCards">
+                    <!-- Order cards will be dynamically rendered here -->
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h2 class="empty-title">No orders found</h2>
+                <p class="empty-message">There are no orders matching your criteria.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Order details will be dynamically rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

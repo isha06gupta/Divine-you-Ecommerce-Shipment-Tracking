@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders - Ayur Leaf</title>
+    <link rel="stylesheet" href="orderHistory.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <img src="logo.jpg" alt="Ayur Leaf" class="logo">
+                <span class="brand-name">AYUR LEAF</span>
+            </div>
+            <div class="nav-center">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="shop.html" class="nav-link">Shop</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-right">
+                <div class="search-bar">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <input type="text" placeholder="Search products...">
+                </div>
+                <button class="cart-btn" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="profile-btn" onclick="toggleProfileDropdown()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-content" id="dropdownContent">
+                        <!-- Content will be dynamically updated based on auth state -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Your Orders</h1>
+                <p class="page-subtitle">Track and manage your orders</p>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-bar-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="orderSearchInput" 
+                        class="search-input" 
+                        placeholder="Search by product name or order ID..."
+                        onkeyup="searchOrders()"
+                    >
+                    <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Container -->
+        <div class="orders-container">
+            <div id="ordersList" class="orders-list">
+                <!-- Orders will be dynamically rendered here -->
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h2 class="empty-title">No orders found</h2>
+                <p class="empty-message">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+                <a href="shop.html" class="shop-now-btn">Shop Now</a>
+            </div>
+
+            <!-- No Search Results -->
+            <div id="noSearchResults" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h2 class="empty-title">No orders found</h2>
+                <p class="empty-message">Try searching with different keywords</p>
+                <button class="clear-search-btn-alt" onclick="clearSearch()">Clear Search</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="orderHistory.js"></script>
+</body>
+</html>
