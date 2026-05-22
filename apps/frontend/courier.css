@@ -1353,3 +1353,52 @@ body {
         justify-content: center;
     }
 }
+.status-select {
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid #dcdcdc;
+
+    margin-top: 12px;
+
+    cursor: pointer;
+
+    width: 100%;
+
+    font-size: 14px;
+}
+.manual-entry-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    margin-top:12px;
+}
+
+.manual-input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border-light);
+    border-radius:10px;
+    outline:none;
+    font-size:14px;
+    background:white;
+    transition:0.3s;
+}
+
+.manual-input:focus{
+    border-color:var(--primary-olive);
+    box-shadow:0 0 0 3px rgba(85,107,47,0.12);
+}
+
+.save-manual-btn{
+    background:var(--success-green);
+    color:white;
+    border:none;
+}
+
+.save-manual-btn:hover{
+    background:#40916c;
+}

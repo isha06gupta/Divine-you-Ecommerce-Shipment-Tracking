@@ -1,35 +1,27 @@
-function checkAccess(allowedRole) {
+function checkAccess(allowedRole){
 
     const user =
-        JSON.parse(
-            localStorage.getItem(
-                "ayurLeafUser"
-            )
-        );
+    JSON.parse(
+        localStorage.getItem("divineYouUser")
+    );
 
-    const token =
-        localStorage.getItem(
-            "ayurLeafAuthToken"
-        );
-
-    // NOT LOGGED IN
-    if (!user || !token) {
+    if(!user){
 
         window.location.href =
-            "./index.html";
+        "./index.html";
 
         return false;
     }
 
-    // WRONG ROLE
-    if (user.role !== allowedRole) {
+    if(
+        user.role.toLowerCase() !==
+        allowedRole.toLowerCase()
+    ){
 
-        alert(
-            "Access Denied"
-        );
+        alert("Access Denied");
 
         window.location.href =
-            "./index.html";
+        "./index.html";
 
         return false;
     }

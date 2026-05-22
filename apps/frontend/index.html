@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayur Leaf</title>
+    <title>Divine You</title>
     <!--styles-->
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome for social media icons -->
@@ -19,8 +19,8 @@
                             <div class="header-logo">
                                 <!-- Logo image -->
                                 <a href="index.html" class="logo-link">
-                                    <img src="logo.jpg" class="logo-img" alt="Logo">
-                                    <span>AYUR</span> LEAF
+                                    <img src="logo.png" class="logo-img" alt="Logo">
+                                    <span>Divine </span> You
                                 </a>
                             </div>
                         </div>
@@ -29,7 +29,7 @@
                                 <a class="nav-items active" href="index.html">Home</a>
                                 <a class="nav-items" href="aboutus.html">About Us</a>
                                 <a class="nav-items" href="shop.html">Shop</a>
-                                <a class="nav-items" href="contact.html">Contact</a>
+                                <a class="nav-items" >Contact</a>
                             </nav>
                         </div>
                         <div class="navbar-right">
@@ -65,11 +65,28 @@
                 <div class="left-grid">
                     <h3 class="section-sub">About Us</h3>
                     <h2 class="section-title">Who We Are</h2>
-                    <p>At Ayur Leaf, we believe that nature holds the power to heal, nourish, and restore everyday wellness. Our mission is to bring pure herbal and Ayurvedic products to every home through carefully sourced ingredients and trusted traditional practices. From herbal teas and skincare to natural supplements and wellness essentials, we focus on quality, authenticity, and sustainability. We are committed to helping people embrace a healthier lifestyle with products inspired by nature and crafted with care.</p>
+                    <p>At Divine You, we are dedicated to bringing natural wellness products
+                         made with care and purity. Our products are thoughtfully prepared 
+                         using herbal ingredients inspired by traditional Ayurvedic knowledge
+                          and modern wellness needs. We currently offer Shilajit Powder,
+                           Herbal Powder, Aloe Vera Gel, and Moringa Powder to support 
+                           a healthier lifestyle naturally. Every product is created with
+                            a focus on quality, authenticity, and customer trust. 
+                            As we continue to grow, we aim to introduce more natural
+                             wellness products that help people feel healthier, 
+                             stronger, and more connected to nature.</p>
                     <button class="action-btn"><a href="aboutus.html" class="more-link">Learn More</a></button> <!-- Updated link -->
                 </div>
                 <div class="right-grid">
-                    <img src="tiger.jpg" class="about-img">
+                    <video
+    class="about-video"
+    autoplay
+    muted
+    loop
+    playsinline
+>
+    <source src="HealthPowder.mp4" type="video/mp4">
+</video>
                 </div>
             </div>
         </div>
@@ -83,16 +100,16 @@
                 
                 <div class="initiatives-grid">
                     <div class="initiative-box" onclick="window.location.href='shop.html'">
-                        <img src="product2.jpg" class="initiative-img" alt="Transforming Learning Spaces">
-                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Triphala Dry Extract</a></button>
+                        <img src="product1.jpeg" class="initiative-img" alt="Aloe Vera Gel">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Aloe Vera Gel</a></button>
                     </div>
                     <div class="initiative-box" onclick="window.location.href='shop.html'">
-                        <img src="product1.jpg" class="initiative-img" alt="Student Support Programs">
-                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Mulethi Dry Extract</a></button>
+                        <img src="product2.jpeg" class="initiative-img" alt="Moringa Powder">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Moringa Powder</a></button>
                     </div>
                     <div class="initiative-box" onclick="window.location.href='shop.html'">
-                        <img src="product3.jpg" class="initiative-img" alt="Empowering Educators">
-                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Ashwagandha Dry Extract</a></button>
+                        <img src="product3.jpg" class="initiative-img" alt="Herbal Powder">
+                        <button class="initiative-btn"><a href="shop.html" class="more-link" onclick="event.stopPropagation()">Herbal Powder</a></button>
                     </div>
                 </div>
             </div>
@@ -103,19 +120,11 @@
         <div class="section-box">
             <div class="content-wrap">
                 <h3 class="section-sub">Stay Connected</h3>
-                <h2 class="section-title">Get Wellness Updates</h2>
+                <h2 class="section-title">Get New Product Info & News</h2>
                 <div class="join-form">
-                    <input type="text" class="input-1 i1" placeholder="Your Name" id="name"> 
-                    <input type="email" class="input-1 i2" placeholder="Your Email" id="email">
-                
-                    <p>Membership</p>
-                    <div class="checkbox-wrap">
-                        <label><input type="checkbox" id="volunteer">Herbal Tips</label>
-                        <label><input type="checkbox" id="sponsor">Exclusive Offers</label>
-                        <label><input type="checkbox" id="partner">New Arrivals</label>
-                    </div>
-                    <button class="join-btn" id="submit-btn">Suscribe Now !</button>
-                </div>                
+                    <input type="text" class="input-1 i1" placeholder="Your Name" id="name">
+                    <input type="tel" class="input-1 i2" placeholder="Your Phone Number" id="phone">
+                    <button class="join-btn" id="submit-btn"> Get Updates </button></div>   
             </div>
         </div>
     </section>
@@ -125,7 +134,7 @@
             <div class="footer-grid">
                 <!-- Column 1: Brand Information -->
                 <div class="footer-column">
-                    <h3 class="footer-heading">Ayur Leaf</h3>
+                    <h3 class="footer-heading">Divine You</h3>
                     <p class="footer-description">Natural wellness inspired by Ayurveda and crafted with pure herbal ingredients for everyday health and self-care.</p>
                     <div class="contact-info">
                         <p class="footer-contact-item"><i class="fas fa-map-marker-alt"></i> New Delhi, India</p>
@@ -176,7 +185,7 @@
             
             <!-- Copyright Section -->
             <div class="copyright-section">
-                <p class="copyright">© 2026 Ayur Leaf. All Rights Reserved.</p>
+                <p class="copyright">© 2026 Divine You. All Rights Reserved.</p>
             </div>
         </div>
     </section>
@@ -282,7 +291,20 @@
     </div>
 
 </div>
-                    
+    <div class="form-group">
+    <label for="registerPhone">
+        Phone Number
+    </label>
+
+    <input
+        type="tel"
+        id="registerPhone"
+        name="phone"
+        required
+        placeholder="Enter phone number"
+    >
+
+</div>
                     <div class="form-group">
                         <label for="registerEmail">Email</label>
                         <input type="email" id="registerEmail" name="email" required placeholder="Enter your email">

@@ -1,7 +1,7 @@
 const currentUser =
-JSON.parse(localStorage.getItem("ayurLeafUser"));
+JSON.parse(localStorage.getItem("divineYouUser"));
 
-console.log("Current User:", currentUser);
+("Current User:", currentUser);
 
 if (
     !currentUser ||
@@ -62,7 +62,7 @@ async function loadCouriers() {
             courierUsers =
             data.couriers;
 
-            console.log(
+            (
                 "Loaded Couriers:",
                 courierUsers
             );
@@ -70,10 +70,6 @@ async function loadCouriers() {
 
     } catch(error) {
 
-        console.error(
-            "Courier Load Error:",
-            error
-        );
     }
 }
 
@@ -87,7 +83,7 @@ async function loadOrders() {
 
         const data = await response.json();
 
-        console.log("Fetched Orders:", data);
+        ("Fetched Orders:", data);
 
         if (data.success) {
 
@@ -106,6 +102,8 @@ async function loadOrders() {
 
                     courierName: order.courier_name || '',
 
+                    tracking_id: order.tracking_id || '',
+                    
                     assigned_courier_email: order.assigned_courier_email || '',
                     
                     assigned_courier_id: order.assigned_courier_id || '',
@@ -143,7 +141,7 @@ customer: {
 
     } catch (error) {
 
-        console.error("Error loading orders:", error);
+        ("Error loading orders:", error);
 
         allOrders = [];
         filteredOrders = [];
@@ -373,40 +371,47 @@ function renderTableView() {
 }
 
 // Create table row for order
-function createOrderTableRow(order) {
+function createOrderTableRow(order){
+
     const row = document.createElement('tr');
-    const customerName = order.customer?.name || order.customerName || 'N/A';
-    const customerEmail = order.customer?.email || order.email || 'N/A';
-    const orderDate = formatOrderDate(order.orderDate || order.created_at);
-    const amount = `₹${(order.totalAmount || 0).toFixed(2)}`;
-    
+
+    const customerName =
+    order.customer?.name || 'N/A';
+
+    const customerEmail =
+    order.customer?.email || 'N/A';
+
+    const orderDate =
+    formatOrderDate(order.orderDate);
+
+    const amount =
+    `₹${(order.totalAmount || 0).toFixed(2)}`;
+
     row.innerHTML = `
+
         <td><strong>${order.orderId}</strong></td>
+
         <td>${customerName}</td>
+
         <td>${customerEmail}</td>
-        <td>
-    ${createProductsPreview(order.products)}
-</td>
+
+        <td>${createProductsPreview(order.products)}</td>
+
         <td>${orderDate}</td>
+
         <td>${amount}</td>
+
         <td>${createPaymentBadge(order.paymentStatus)}</td>
-        <td>
-    ${createStatusBadge(order.orderStatus)}
-    <div class="status-actions">
-        ${createStatusActionButtons(order)}
-    </div>
-</td>
-        <td>${createCourierDropdown(
-    order.orderId,
-    order.courierName,
-    order.assigned_courier_email
-)}</td>
-        <td>${order.shipmentId || '-'}</td>
+
+        <td>${order.courierName || '-'}</td>
+
+        <td>${order.tracking_id || '-'}</td>
+
         <td class="actions-cell">
             ${createActionButtons(order)}
         </td>
     `;
-    
+
     return row;
 }
 
@@ -489,71 +494,6 @@ function createPaymentBadge(status) {
 }
 
 
-function createStatusActionButtons(order) {
-
-    const status = order.orderStatus;
-
-    if (status === 'pending') {
-
-        return `
-            <button
-                class="mini-status-btn"
-                onclick="updateOrderStatus('${order.orderId}', 'processing')">
-                Mark Processing
-            </button>
-        `;
-    }
-
-    if (status === 'processing') {
-
-        return `
-            <button
-                class="mini-status-btn"
-                onclick="updateOrderStatus('${order.orderId}', 'packed')">
-                Mark Packed
-            </button>
-        `;
-    }
-
-    if (status === 'packed') {
-
-        return `
-            <button
-                class="mini-status-btn"
-                onclick="updateOrderStatus('${order.orderId}', 'shipped')">
-                Mark Shipped
-            </button>
-        `;
-    }
-
-    if (status === 'shipped') {
-
-        return `
-            <button
-                class="mini-status-btn"
-                onclick="updateOrderStatus('${order.orderId}', 'out_for_delivery')">
-                Out For Delivery
-            </button>
-        `;
-    }
-
-    if (status === 'out_for_delivery') {
-
-        return `
-            <button
-                class="mini-status-btn"
-                onclick="updateOrderStatus('${order.orderId}', 'delivered')">
-                Mark Delivered
-            </button>
-        `;
-    }
-
-    return `
-        <span class="completed-status">
-            Completed
-        </span>
-    `;
-}
 // Create courier dropdown
 function createCourierDropdown(
     orderId,
@@ -677,11 +617,7 @@ function createProductsPreview(products = []) {
 }
 
 // Create action buttons
-function createActionButtons(order) {
-
-    const hasShipmentId =
-        order.shipmentId &&
-        order.shipmentId.trim() !== '';
+function createActionButtons(order){
 
     return `
 
@@ -689,51 +625,17 @@ function createActionButtons(order) {
             class="action-btn view-btn-action"
             onclick="viewOrderDetails('${order.orderId}')"
         >
-
             <i class="fas fa-eye"></i>
-
             View
-
         </button>
 
         <button
             class="action-btn invoice-btn"
             onclick="downloadInvoice('${order.orderId}')"
         >
-
             <i class="fas fa-file-pdf"></i>
-
             Invoice
-
         </button>
-
-        ${!hasShipmentId ? `
-
-            <button
-                class="action-btn generate-btn"
-                onclick="generateShipmentId('${order.orderId}')"
-            >
-
-                <i class="fas fa-tag"></i>
-
-                Generate ID
-
-            </button>
-
-        ` : `
-
-            <button
-                class="action-btn generate-btn"
-                disabled
-            >
-
-                <i class="fas fa-check"></i>
-
-                ID Generated
-
-            </button>
-
-        `}
     `;
 }
 // Update order status
@@ -834,7 +736,7 @@ async function updateOrderStatus(orderId, newStatus) {
 
     } catch(error) {
 
-        console.error(
+        (
             "Status Update Error:",
             error
         );
@@ -883,9 +785,10 @@ async function updateCourierCompany(orderId, newCourier) {
 
     } catch(error) {
 
-        console.error(error);
+        (error);
     }
 }
+
 async function assignCourierPerson(
     orderId,
     courierEmail
@@ -908,30 +811,42 @@ async function assignCourierPerson(
             return;
         }
 
+        (
+            "Assigning Courier:",
+            courier
+        );
+
         const response =
         await fetch(
             `http://localhost:7000/api/orders/${orderId}/courier`,
             {
                 method: "PUT",
+
                 headers: {
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
 
                     courier_name:
                         courier.company_name,
 
-                    assigned_courier_email:
-                        courier.email,
+                    courier_id:
+                        courier.id,
 
-                    assigned_courier_id:
-                        courier.id
+                    assigned_courier_email:
+                        courier.email
                 })
             }
         );
 
         const data =
         await response.json();
+
+        (
+            "Courier Assign Response:",
+            data
+        );
 
         if (data.success) {
 
@@ -941,11 +856,21 @@ async function assignCourierPerson(
             );
 
             loadOrders();
+
+        } else {
+
+            showNotification(
+                "Assignment failed",
+                "error"
+            );
         }
 
     } catch(error) {
 
-        console.error(error);
+        (
+            "COURIER ASSIGN ERROR:",
+            error
+        );
 
         showNotification(
             "Assignment failed",
@@ -953,47 +878,9 @@ async function assignCourierPerson(
         );
     }
 }
+
 // Generate shipment ID
-async function generateShipmentId(orderId) {
 
-    try {
-
-        const response = await fetch(
-            `http://localhost:7000/api/orders/${orderId}/shipment`,
-            {
-                method: "PUT"
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.success) {
-
-            showNotification(
-                `Shipment ID generated: ${data.shipment_id}`,
-                "success"
-            );
-
-            loadOrders();
-
-        } else {
-
-            showNotification(
-                "Failed to generate shipment ID",
-                "error"
-            );
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        showNotification(
-            "Error generating shipment ID",
-            "error"
-        );
-    }
-}
 // View order details
 function viewOrderDetails(orderId) {
     const order = allOrders.find(o => o.orderId === orderId);
@@ -1431,7 +1318,7 @@ function saveOrders() {
     try {
         localStorage.setItem('orders', JSON.stringify(allOrders));
     } catch (error) {
-        console.error('Error saving orders:', error);
+        ('Error saving orders:', error);
         showNotification('Error saving orders', 'error');
     }
 }
@@ -1490,12 +1377,33 @@ function showNotification(message, type = 'success') {
 
 // Handle logout
 function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        // Redirect to main site or login page
-        window.location.href = 'index.html';
-    }
-}
 
+    // REMOVE USER SESSION
+    localStorage.removeItem(
+        "divineYouUser"
+    );
+
+    localStorage.removeItem(
+        "divineYouAuthToken"
+    );
+
+    // REMOVE ALL POSSIBLE CARTS
+    Object.keys(localStorage).forEach(key => {
+
+        if (
+            key.startsWith("divineYouCart_") ||
+            key === "divineYouGuestCart"
+        ) {
+
+            localStorage.removeItem(key);
+        }
+    });
+
+    // REDIRECT DIRECTLY
+    window.location.replace(
+        "index.html"
+    );
+}
 // Utility functions
 function formatOrderDate(dateString) {
     if (!dateString) return 'N/A';
@@ -2007,11 +1915,19 @@ const password =document.getElementById(
 
     } catch(error) {
 
-        console.error(error);
+        (error);
 
         showNotification(
             "Server error",
             "error"
         );
     }
+}
+
+function openMedusaAdmin() {
+
+    window.open(
+        "http://localhost:9000/app",
+        "_blank"
+    );
 }

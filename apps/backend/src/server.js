@@ -15,9 +15,17 @@ const app = express();
 
 const addressRoutes =require("./routes/addressRoutes");
 
+const path = require("path");
+
 app.use(cors());
 
 app.use(express.json());
+app.use(
+    "/uploads",
+    express.static(
+        path.join(__dirname, "../uploads")
+    )
+);
 
 // ROUTES
 app.use( "/api/orders",orderRoutes );

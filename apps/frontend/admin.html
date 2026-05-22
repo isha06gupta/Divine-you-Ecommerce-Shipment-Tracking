@@ -1,511 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Ayur Leaf</title>
-    <link rel="stylesheet" href="admin.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Divine You</title>
+
+<link rel="stylesheet" href="admin.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <!-- Admin Header -->
-    <header class="admin-header">
-        <div class="header-container">
-            <div class="header-left">
-                <img src="logo.jpg" alt="Ayur Leaf" class="logo">
-                <div class="brand-info">
-                    <span class="brand-name">AYUR LEAF</span>
-                    <span class="admin-title">Admin Dashboard</span>
-                </div>
-            </div>
-            <div class="header-center">
-                <div class="search-bar">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="globalSearchInput" placeholder="Search orders, customers...">
-                    <button class="clear-search-btn" id="clearGlobalSearch" style="display: none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="admin-profile">
-                    <div class="profile-info">
-                        <i class="fas fa-user-shield"></i>
-                        <span>Administrator</span>
-                    </div>
-                    <button class="logout-btn" onclick="handleLogout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="admin-main">
-        <!-- Dashboard Summary Cards -->
-        <section class="summary-section">
-            <div class="summary-cards">
-                <div class="summary-card total-orders">
-                    <div class="card-icon">
-                        <i class="fas fa-shopping-bag"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Total Orders</h3>
-                        <p class="card-value" id="totalOrdersCount">0</p>
-                    </div>
-                </div>
-                
-                <div class="summary-card pending-orders">
-                    <div class="card-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Pending Orders</h3>
-                        <p class="card-value" id="pendingOrdersCount">0</p>
-                    </div>
-                </div>
-                <div class="summary-card">
+<header class="admin-header">
 
-    <div class="summary-icon">
-        <i class="fas fa-users"></i>
-    </div>
+<div class="header-container">
 
-    <div class="summary-content">
+<div class="header-left">
 
-        <h3 id="totalCustomersCount">0</h3>
+<a href="index.html" style="display:flex;align-items:center;text-decoration:none;color:inherit;">
+<img src="logo.png" alt="Divine You" class="logo">
 
-        <p>Total Customers</p>
+<div class="brand-info">
+<span class="brand-name">Divine You</span>
+<span class="admin-title">Admin Dashboard</span>
+</div>
+</a>
 
-    </div>
+</div>
 
+<div class="header-center">
+
+<div class="search-bar">
+
+<i class="fas fa-search search-icon"></i>
+
+<input type="text" id="globalSearchInput" placeholder="Search orders, customers...">
+
+<button class="clear-search-btn" id="clearGlobalSearch" style="display:none;">
+<i class="fas fa-times"></i>
+</button>
+
+</div>
+
+</div>
+
+<div class="header-right">
+
+<div class="admin-profile">
+
+<button class="medusa-btn" onclick="openMedusaAdmin()">
+<i class="fas fa-box-open"></i>
+Product Control
+</button>
+
+<div class="profile-info">
+<i class="fas fa-user-shield"></i>
+<span>Administrator</span>
+</div>
+
+<button class="logout-btn" onclick="handleLogout()">
+<i class="fas fa-sign-out-alt"></i>
+Logout
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<main class="admin-main">
+
+<section class="summary-section">
+
+<div class="summary-cards">
+
+<div class="summary-card total-orders">
+<div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
+<div class="card-content">
+<h3 class="card-title">Total Orders</h3>
+<p class="card-value" id="totalOrdersCount">0</p>
+</div>
+</div>
+
+<div class="summary-card pending-orders">
+<div class="card-icon"><i class="fas fa-clock"></i></div>
+<div class="card-content">
+<h3 class="card-title">Pending Orders</h3>
+<p class="card-value" id="pendingOrdersCount">0</p>
+</div>
 </div>
 
 <div class="summary-card">
-
-    <div class="summary-icon">
-        <i class="fas fa-chart-line"></i>
-    </div>
-
-    <div class="summary-content">
-
-        <h3 id="averageOrderValue">₹0</h3>
-
-        <p>Average Order Value</p>
-
-    </div>
-
+<div class="summary-icon"><i class="fas fa-users"></i></div>
+<div class="summary-content">
+<h3 id="totalCustomersCount">0</h3>
+<p>Total Customers</p>
+</div>
 </div>
 
 <div class="summary-card">
+<div class="summary-icon"><i class="fas fa-chart-line"></i></div>
+<div class="summary-content">
+<h3 id="averageOrderValue">₹0</h3>
+<p>Average Order Value</p>
+</div>
+</div>
 
-    <div class="summary-icon">
-        <i class="fas fa-box"></i>
-    </div>
+<div class="summary-card">
+<div class="summary-icon"><i class="fas fa-box"></i></div>
+<div class="summary-content">
+<h3 id="productsSoldCount">0</h3>
+<p>Products Sold</p>
+</div>
+</div>
 
-    <div class="summary-content">
+<div class="summary-card shipped-orders">
+<div class="card-icon"><i class="fas fa-truck"></i></div>
+<div class="card-content">
+<h3 class="card-title">Shipped Orders</h3>
+<p class="card-value" id="shippedOrdersCount">0</p>
+</div>
+</div>
 
-        <h3 id="productsSoldCount">0</h3>
+<div class="summary-card delivered-orders">
+<div class="card-icon"><i class="fas fa-check-circle"></i></div>
+<div class="card-content">
+<h3 class="card-title">Delivered Orders</h3>
+<p class="card-value" id="deliveredOrdersCount">0</p>
+</div>
+</div>
 
-        <p>Products Sold</p>
-
-    </div>
+<div class="summary-card total-revenue">
+<div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+<div class="card-content">
+<h3 class="card-title">Total Revenue</h3>
+<p class="card-value" id="totalRevenueAmount">₹0</p>
+</div>
+</div>
 
 </div>
-                
-                <div class="summary-card shipped-orders">
-                    <div class="card-icon">
-                        <i class="fas fa-truck"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Shipped Orders</h3>
-                        <p class="card-value" id="shippedOrdersCount">0</p>
-                    </div>
-                </div>
-                
-                <div class="summary-card delivered-orders">
-                    <div class="card-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Delivered Orders</h3>
-                        <p class="card-value" id="deliveredOrdersCount">0</p>
-                    </div>
-                </div>
-                
-                <div class="summary-card total-revenue">
-                    <div class="card-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Total Revenue</h3>
-                        <p class="card-value" id="totalRevenueAmount">$0</p>
-                    </div>
-                </div>
-            </div>
-            <div
-    class="summary-card add-courier-card"
-    onclick="openCourierModal()"
->
 
-    <div class="card-icon">
-        <i class="fas fa-user-plus"></i>
-    </div>
-
-    <div class="card-content">
-
-        <h3 class="card-title">
-            Courier Management
-        </h3>
-
-        <p class="card-value add-courier-text">
-            Add Courier
-        </p>
-
-    </div>
-
-</div>
-            <div class="recent-activity-section">
-
-    <div class="section-header">
-        <h2>Recent Activity</h2>
-    </div>
-
-    <div
-        class="recent-activity-list"
-        id="recentActivityList"
-    >
-
-    </div>
-
-</div>
-        </section>
-
-        <!-- Filters Section -->
-<section class="filters-section">
-
-    <div class="filters-container">
-
-        <div class="filter-group">
-
-            <label for="statusFilter">
-                Filter by Status:
-            </label>
-
-            <select
-                id="statusFilter"
-                onchange="filterOrders()"
-            >
-                <option value="">
-                    All Orders
-                </option>
-
-                <option value="pending">
-                    Pending
-                </option>
-
-                <option value="processing">
-                    Processing
-                </option>
-
-                <option value="packed">
-                    Packed
-                </option>
-
-                <option value="shipped">
-                    Shipped
-                </option>
-
-                <option value="out_for_delivery">
-                    Out for Delivery
-                </option>
-
-                <option value="delivered">
-                    Delivered
-                </option>
-
-                <option value="cancelled">
-                    Cancelled
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="filter-group">
-
-            <input
-                type="text"
-                id="shipmentSearchInput"
-                placeholder="Search Shipment ID..."
-                class="search-input"
-            />
-
-        </div>
-
-        <div class="filter-group">
-
-            <select id="courierFilter">
-
-                <option value="">
-                    All Couriers
-                </option>
-
-                <option value="Delhivery">
-                    Delhivery
-                </option>
-
-                <option value="BlueDart">
-                    BlueDart
-                </option>
-
-                <option value="DTDC">
-                    DTDC
-                </option>
-
-                <option value="Ekart">
-                    Ekart
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="filter-group">
-
-            <select id="sortOrders">
-
-                <option value="latest">
-                    Latest Orders
-                </option>
-
-                <option value="oldest">
-                    Oldest Orders
-                </option>
-
-                <option value="high">
-                    Highest Amount
-                </option>
-
-                <option value="low">
-                    Lowest Amount
-                </option>
-
-            </select>
-
-        </div>
-        
-
-        <div class="filter-group">
-
-            <button
-                class="refresh-btn"
-                onclick="refreshDashboard()"
-            >
-
-                <i class="fas fa-sync-alt"></i>
-
-                Refresh
-
-            </button>
-
-        </div>
-    </div>
 </section>
 
-</section>
-        <!-- Orders Table Section -->
-        <section class="orders-section">
-            <div class="orders-header">
-                <h2>All Orders</h2>
-                <div class="view-toggle">
-                    <button class="view-btn active" data-view="table" onclick="toggleView('table')">
-                        <i class="fas fa-table"></i>
-                        Table
-                    </button>
-                    <button class="view-btn" data-view="cards" onclick="toggleView('cards')">
-                        <i class="fas fa-th-large"></i>
-                        Cards
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Table View -->
-            <div id="tableView" class="table-view">
-                <div class="table-container">
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Email</th>
-                                <th>Date</th>
-                                <th>Email</th>
-                                <th>Products</th>
-                                <th>Amount</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Courier</th>
-                                <th>Shipment ID</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody">
-                            <!-- Orders will be dynamically rendered here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Cards View -->
-            <div id="cardsView" class="cards-view" style="display: none;">
-                <div class="orders-cards" id="ordersCards">
-                    <!-- Order cards will be dynamically rendered here -->
-                </div>
-            </div>
-            
-            <!-- Empty State -->
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <div class="empty-icon">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <h2 class="empty-title">No orders found</h2>
-                <p class="empty-message">There are no orders matching your criteria.</p>
-            </div>
-        </section>
-    </main>
-
-    <!-- Order Details Modal -->
-    <div id="orderModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Order Details</h2>
-                <button class="close-btn" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Order details will be dynamically rendered here -->
-            </div>
-        </div>
-    </div>
-    <!-- Courier Modal -->
-
-<div
-    id="courierModal"
-    class="modal"
->
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>
-                Add Courier
-            </h2>
-
-            <button
-                class="close-btn"
-                onclick="closeCourierModal()"
-            >
-                <i class="fas fa-times"></i>
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <form
-                id="courierForm"
-                onsubmit="createCourier(event)"
-            >
-
-                <div class="form-grid">
-
-                    <input
-                        type="text"
-                        id="courierFirstName"
-                        placeholder="First Name"
-                        required
-                    >
-
-                    <input
-                        type="text"
-                        id="courierLastName"
-                        placeholder="Last Name"
-                        required
-                    >
-
-                    <input
-                        type="email"
-                        id="courierEmail"
-                        placeholder="Email"
-                        required
-                    >
-                    <input
-                    type="text"
-                    id="courierPhone"
-                    placeholder="Phone Number"
-                    required
-                    >
-
-                    <input
-                        type="password"
-                        id="courierPassword"
-                        placeholder="Password"
-                        required
-                    >
-
-                    <select
-                        id="courierCompany"
-                        required
-                    >
-
-                        <option value="">
-                            Select Courier Company
-                        </option>
-
-                        <option value="Delhivery">
-                            Delhivery
-                        </option>
-
-                        <option value="BlueDart">
-                            BlueDart
-                        </option>
-
-                        <option value="DTDC">
-                            DTDC
-                        </option>
-
-                        <option value="Ekart">
-                            Ekart
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <button
-                    type="submit"
-                    class="refresh-btn"
-                    style="margin-top:20px;"
-                >
-                    Create Courier
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
+</div>
 
 </div>
+
+</section>
+
+<section class="orders-section">
+
+<div class="orders-header">
+
+<h2>All Orders</h2>
+
+<div class="view-toggle">
+
+<button class="view-btn active" data-view="table" onclick="toggleView('table')">
+<i class="fas fa-table"></i>
+Table
+</button>
+
+<button class="view-btn" data-view="cards" onclick="toggleView('cards')">
+<i class="fas fa-th-large"></i>
+Cards
+</button>
+
+</div>
+
+</div>
+
+<div id="tableView" class="table-view">
+
+<div class="table-container">
+
+<table class="orders-table">
+
+<thead>
+
+<tr>
+
+<th>Order ID</th>
+<th>Customer</th>
+<th>Email</th>
+<th>Products</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Payment</th>
+<th>Courier</th>
+<th>Tracking ID</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="ordersTableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<div id="cardsView" class="cards-view" style="display:none;">
+<div class="orders-cards" id="ordersCards"></div>
+</div>
+
+</section>
+
+</main>
+
+<div id="orderModal" class="modal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h2>Order Details</h2>
+
+<button class="close-btn" onclick="closeModal()">
+<i class="fas fa-times"></i>
+</button>
+
+</div>
+
+<div class="modal-body" id="modalBody"></div>
+
+</div>
+
+</div>
+
 <script src="authGuard.js"></script>
-    <script src="admin.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="admin.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </body>
 </html>

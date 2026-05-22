@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize authentication state
 function initializeAuth() {
     // Check if user is logged in (same logic as shop.js)
-    const userStr = localStorage.getItem('ayurLeafUser');
+    const userStr = localStorage.getItem('divineYouUser');
     if (userStr) {
         try {
             currentUser = JSON.parse(userStr);
@@ -98,6 +98,7 @@ async function loadOrders() {
 
                     orderId: order.order_id,
 
+                    shipmentId: order.shipment_id,
                     created_at: order.created_at,
 
                     orderStatus: order.order_status,
@@ -109,10 +110,14 @@ async function loadOrders() {
                     customerName: order.first_name || "Customer",
 
                     customerEmail: order.email,
-
+address: order.address,
+trackingId: order.tracking_id,
                     shipmentId: order.shipment_id,
 
                     courierName: order.courier_name,
+
+                    phone: order.phone,
+                    shipmentId: order.shipment_id,
 
                     items: (order.items || []).map(item => ({
 
@@ -182,7 +187,11 @@ function filterUserOrders() {
         return dateB - dateA;
     });
 
-    console.log("Filtered Orders:", filteredOrders);
+    
+    console.log(
+    "FIRST FILTERED ORDER:",
+    filteredOrders[0]
+);
 }
 // Render orders to the page
 function renderOrders(ordersToRender = filteredOrders) {
@@ -202,73 +211,173 @@ function renderOrders(ordersToRender = filteredOrders) {
 
 // Create order card HTML
 function createOrderCard(order) {
-    const orderDate = formatDate(order.created_at || order.orderDate);
-    const orderStatus = order.orderStatus || 'pending';
-    const firstItem = order.items && order.items.length > 0 ? order.items[0] : null;
-    
-    // Get product image (fallback to placeholder)
+
+    const orderDate =
+        formatDate(order.created_at);
+
+    const orderStatus =
+        order.orderStatus || 'pending';
+
+    const firstItem =
+        order.items &&
+        order.items.length > 0
+            ? order.items[0]
+            : null;
+
     const productImage =
-    firstItem?.image ||
-    'https://via.placeholder.com/80x80';
-    
-    // Get product title (show first item or order summary)
-    const productTitle = firstItem?.title || firstItem?.name || 'Order Items';
-    
-    // Handle multiple items
-    const itemCount = order.items ? order.items.length : 0;
-    const titleText = itemCount > 1 ? `${productTitle} +${itemCount - 1} more` : productTitle;
-    
-    // Get customer name
-    const customerName = order.customerName || order.shippingName || 'Customer';
-    
-    // Format total amount
+        firstItem?.image ||
+        'https://via.placeholder.com/80x80';
+
+    const productTitle =
+        firstItem?.title ||
+        'Order Items';
+
+    const itemCount =
+        order.items
+            ? order.items.length
+            : 0;
+
+    const titleText =
+        itemCount > 1
+            ? `${productTitle} +${itemCount - 1} more`
+            : productTitle;
+
+    const customerName =
+        order.customerName ||
+        'Customer';
+
     const totalAmount =
-    formatCurrency(order.total || 0);
-    
+        formatCurrency(order.total || 0);
+
     return `
+
         <div class="order-card">
+
             <div class="order-header">
+
                 <div class="order-info">
-                    <div class="order-id">Order #${order.orderId || order.id}</div>
-                    <div class="order-date">Placed on ${orderDate}</div>
-                </div>
-                <div class="order-status status-${orderStatus.toLowerCase()}">
-                    ${formatStatus(orderStatus)}
-                </div>
-            </div>
-            
-            <div class="order-content">
-                <img src="${productImage}" alt="${productTitle}" class="product-image">
-                <div class="product-info">
-                    <div class="product-title">${titleText}</div>
-                    <div class="product-meta">
-                        Shipped to: ${customerName}
+
+                    <div class="order-id">
+                        Order #${order.orderId}
                     </div>
+
+                    <div class="order-date">
+                        Placed on ${orderDate}
+                    </div>
+
                 </div>
-                <div class="order-details">
-                    <div class="order-total">${totalAmount}</div>
-                    <div class="shipping-info">${itemCount} item${itemCount !== 1 ? 's' : ''}</div>
+
+                <div class="order-status status-${orderStatus.toLowerCase()}">
+
+                    ${formatStatus(orderStatus)}
+
                 </div>
+
             </div>
-            
+
+            <div class="order-content">
+
+                <img
+                    src="${productImage}"
+                    alt="${productTitle}"
+                    class="product-image"
+                >
+
+                <div class="product-info">
+
+                    <div class="product-title">
+                        ${titleText}
+                    </div>
+
+                    <div class="product-meta">
+                        Shipped to:
+                        ${customerName}
+                    </div>
+
+                </div>
+
+                <div class="order-details">
+
+                    <div class="order-total">
+                        ${totalAmount}
+                    </div>
+
+                    <div class="shipping-info">
+
+                        ${itemCount}
+                        item${itemCount !== 1 ? 's' : ''}
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <div class="order-actions">
-                <button class="action-btn" onclick="trackPackage('${order.orderId || order.id}')">
-                    <i class="fas fa-truck"></i>
-                    Track Package
-                </button>
-                <button class="action-btn" onclick="viewOrderDetails('${order.orderId || order.id}')">
+
+                ${
+                    order.shipmentId
+
+                    ?
+
+                    `
+                    <button
+                        class="action-btn"
+                        onclick="trackPackage('${order.shipmentId}')"
+                    >
+                        <i class="fas fa-truck"></i>
+                        Track Package
+                    </button>
+                    `
+
+                    :
+
+                    `
+                    <button
+                        class="action-btn"
+                        disabled
+                        style="
+                            opacity:0.6;
+                            cursor:not-allowed;
+                        "
+                    >
+                        <i class="fas fa-clock"></i>
+                        Shipment Pending
+                    </button>
+                    `
+                }
+
+                <button
+                    class="action-btn"
+                    onclick="viewOrderDetails('${order.orderId}')"
+                >
                     <i class="fas fa-eye"></i>
                     View Order Details
                 </button>
-                <button class="action-btn primary" onclick="buyAgain('${order.orderId || order.id}')">
-                    <i class="fas fa-redo"></i>
-                    Buy Again
-                </button>
+
+                <button
+    class="action-btn"
+    onclick="downloadInvoice('${order.orderId}')"
+>
+    <i class="fas fa-file-pdf"></i>
+    Invoice
+</button>
+
+<button
+    class="action-btn primary"
+    onclick="buyAgain('${order.orderId}')"
+>
+    <i class="fas fa-redo"></i>
+    Buy Again
+</button>
+
+S
+
             </div>
+
         </div>
     `;
 }
-
 // Format date
 function formatDate(dateString) {
     if (!dateString) return 'Unknown date';
@@ -379,127 +488,137 @@ function clearSearch() {
     renderOrders();
 }
 
-// Order action functions
-async function trackPackage(orderId) {
+function trackPackage(shipmentId) {
 
-    try {
-
-        const order = allOrders.find(
-            o => (o.orderId || o.id) === orderId
-        );
-
-        if (!order) return;
-
-        const response = await fetch(
-            `http://localhost:7000/api/tracking/${order.id}`
-        );
-
-        const data = await response.json();
-
-        console.log("Tracking Data:", data);
-
-        if (!data.success) {
-
-            alert("Failed to load tracking");
-
-            return;
-        }
-
-        const tracking = data.tracking;
-
-        const latest = tracking[tracking.length - 1];
-
-        const trackingHTML = `
-
-            <div class="tracking-body">
-
-                <div class="tracking-top">
-
-                    <div class="tracking-status">
-                        ${latest?.tracking_status || 'Order Placed'}
-                    </div>
-
-                    <div class="tracking-message">
-                        ${latest?.tracking_message || ''}
-                    </div>
-
-                </div>
-
-                <div class="timeline">
-
-                    ${tracking.map(item => `
-
-                        <div class="timeline-item">
-
-                            <div class="timeline-dot"></div>
-
-                            <div class="timeline-status">
-                                ${item.tracking_status}
-                            </div>
-
-                            <div class="timeline-location">
-                                ${item.location || 'Warehouse'}
-                            </div>
-
-                            <div class="timeline-date">
-                                ${new Date(item.created_at).toLocaleString()}
-                            </div>
-
-                        </div>
-
-                    `).join('')}
-
-                </div>
-
-            </div>
-        `;
-
-        document.getElementById(
-            "trackingModalBody"
-        ).innerHTML = trackingHTML;
-
-        document.getElementById(
-            "trackingModal"
-        ).style.display = "flex";
-
-    } catch (error) {
-
-        console.error("Tracking Error:", error);
-
-        alert("Failed to load tracking");
-    }
+    window.location.href =
+    "https://www.delhivery.com/";
 }
 
 function viewOrderDetails(orderId) {
-    // Find the order
-    const order = allOrders.find(o => (o.orderId || o.id) === orderId);
+
+    const order =
+        allOrders.find(
+            o => (o.orderId || o.id) === orderId
+        );
+
     if (!order) return;
-    
-    // Create detailed order information
-    const itemsList = order.items ? order.items.map(item => 
-        `- ${item.title || item.name} (${item.quantity || 1}x) - ${formatCurrency(item.price || 0)}`
-    ).join('\n') : 'No items found';
-    
-    const orderDetails = `
-ORDER DETAILS
-==============
-Order ID: #${orderId}
-Date: ${formatDate(order.created_at || order.orderDate)}
-Status: ${formatStatus(order.orderStatus)}
-Payment: ${formatCurrency(order.total || order.amount || 0)}
 
-Customer: ${order.customerName || order.shippingName || 'N/A'}
-Email: ${order.userEmail || order.customerEmail || 'N/A'}
-Address: ${order.address || 'N/A'}
+    const itemsHTML =
+        order.items && order.items.length > 0
 
-Items:
-${itemsList}
+        ?
 
-Order details page will be available soon.
+        order.items.map(item => `
+
+            <div
+                style="
+                    padding:12px;
+                    border-bottom:1px solid #ddd;
+                "
+            >
+
+                <div>
+                    <b>
+                        ${item.title || item.name}
+                    </b>
+                </div>
+
+                <div>
+                    Quantity:
+                    ${item.quantity || 1}
+                </div>
+
+                <div>
+                    Price:
+                    ${formatCurrency(item.price || 0)}
+                </div>
+
+            </div>
+
+        `).join("")
+
+        :
+
+        "<p>No items found</p>";
+
+    const html = `
+
+        <div style="padding:10px;">
+
+            <p>
+                <b>Order ID:</b>
+                ${order.orderId}
+            </p>
+
+            <p>
+                <b>Date:</b>
+                ${formatDate(order.created_at)}
+            </p>
+
+            <p>
+                <b>Status:</b>
+                ${formatStatus(order.orderStatus)}
+            </p>
+
+            <p>
+                <b>Payment Status:</b>
+                ${order.paymentStatus || "Pending"}
+            </p>
+
+            <p>
+                <b>Customer:</b>
+                ${order.customerName || "N/A"}
+            </p>
+
+            <p>
+                <b>Email:</b>
+                ${order.customerEmail || "N/A"}
+            </p>
+
+            <p>
+                <b>Shipment ID:</b>
+                ${order.shipmentId || "Not Generated"}
+            </p>
+
+            <p>
+                <b>Courier:</b>
+                ${order.courierName || "Not Assigned"}
+            </p>
+
+            <p>
+                <b>Total:</b>
+                ${formatCurrency(order.total || 0)}
+            </p>
+
+            <hr>
+
+            <h3>
+                Ordered Items
+            </h3>
+
+            ${itemsHTML}
+
+        </div>
     `;
-    
-    alert(orderDetails);
+
+    document.getElementById(
+        "orderModalBody"
+    ).innerHTML = html;
+
+    document.getElementById(
+        "orderModal"
+    ).style.display = "flex";
 }
+function closeOrderModal() {
+
+    document.getElementById(
+        "orderModal"
+    ).style.display = "none";
+}
+
+window.closeOrderModal =
+    closeOrderModal;
+
 
 function buyAgain(orderId) {
     // Find the order
@@ -551,6 +670,133 @@ function buyAgain(orderId) {
         window.location.href = 'shop.html';
     }
 }
+async function downloadInvoice(orderId) {
+
+    const order = allOrders.find(
+        o => (o.orderId || o.id) === orderId
+    );
+
+    if (!order) return;
+
+    let productsText = "";
+
+    if (order.items && order.items.length > 0) {
+
+        order.items.forEach((item, index) => {
+
+            productsText += `
+${index + 1}. ${item.title || item.name || 'Product'}
+
+   Quantity : ${item.quantity || 1}
+
+   Price    : ₹${item.price || 0}
+
+   Total    : ₹${(item.price || 0) * (item.quantity || 1)}
+
+
+`;
+        });
+
+    } else {
+
+        productsText = "No Products Found";
+    }
+
+    const invoiceText = `
+
+DIVINE YOU
+========================================
+
+                INVOICE
+
+
+Order ID       : ${order.orderId}
+
+Date           : ${formatDate(order.created_at)}
+
+Customer Name  : ${order.customerName}
+
+Email          : ${order.customerEmail}
+
+Phone          : ${order.phone || 'N/A'}
+
+Payment Status : ${order.paymentStatus}
+
+
+SHIPPING ADDRESS
+----------------------------------------
+
+${order.address || 'N/A'}
+
+
+ORDERED PRODUCTS
+========================================
+
+${productsText}
+
+========================================
+
+Subtotal       : ₹${order.subtotal || order.total}
+
+Shipping Charge: ₹${order.shippingCharge || 50}
+
+Grand Total    : ₹${order.total}
+
+========================================
+
+Thank you for shopping with Divine You
+
+`;
+
+    const element = document.createElement("pre");
+
+    element.innerText = invoiceText;
+
+    element.style.fontFamily = "Arial";
+    element.style.whiteSpace = "pre-wrap";
+    element.style.padding = "30px";
+    element.style.background = "white";
+    element.style.color = "black";
+    element.style.width = "700px";
+    element.style.fontSize = "16px";
+    element.style.lineHeight = "1.8";
+
+    document.body.appendChild(element);
+
+    const options = {
+
+        margin: 0.5,
+
+        filename: `Invoice-${order.orderId}.pdf`,
+
+        image: {
+            type: 'jpeg',
+            quality: 1
+        },
+
+        html2canvas: {
+            scale: 2
+        },
+
+        jsPDF: {
+            unit: 'in',
+            format: 'a4',
+            orientation: 'portrait'
+        }
+    };
+
+    await html2pdf()
+        .set(options)
+        .from(element)
+        .save();
+
+    document.body.removeChild(element);
+}
+
+window.downloadInvoice = downloadInvoice;
+
+window.downloadInvoice =
+    downloadInvoice;
 
 // Profile dropdown functions (matching shop.js)
 function toggleProfileDropdown() {
@@ -563,11 +809,21 @@ function handleOrderHistory() {
     const dropdown = document.getElementById('profileDropdown');
     if (dropdown) dropdown.classList.remove('active');
 }
-
 function handleAccount() {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown) dropdown.classList.remove('active');
-    alert('Account page coming soon!');
+
+    const dropdown =
+    document.getElementById(
+        'profileDropdown'
+    );
+
+    if (dropdown) {
+        dropdown.classList.remove(
+            'active'
+        );
+    }
+
+    window.location.href =
+    'account.html';
 }
 
 function handleLogout() {
@@ -575,8 +831,8 @@ function handleLogout() {
     if (dropdown) dropdown.classList.remove('active');
     
     // Clear user data (same keys as shop.js)
-    localStorage.removeItem('ayurLeafUser');
-    localStorage.removeItem('ayurLeafAuthToken');
+    localStorage.removeItem('divineYouUser');
+    localStorage.removeItem('divineYouAuthToken');
     currentUser = null;
     
     // Redirect to shop
@@ -635,14 +891,8 @@ function toggleCart() {
     // For now, redirect to shop page to access cart
     window.location.href = 'shop.html';
 }
-function closeTrackingModal() {
 
-    document.getElementById(
-        "trackingModal"
-    ).style.display = "none";
-}
 
-window.closeTrackingModal = closeTrackingModal;
 
 // Export functions for global access
 window.trackPackage = trackPackage;
@@ -657,3 +907,4 @@ window.handleLogout = handleLogout;
 window.handleLogin = handleLogin;
 window.handleRegister = handleRegister;
 window.toggleCart = toggleCart;
+globalThis.handleAccount =handleAccount;

@@ -60,8 +60,8 @@ body {
 }
 
 .logo {
-    height: 40px;
-    width: 40px;
+    height: 80px;
+    width: 80px;
     border-radius: 8px;
     object-fit: cover;
 }
@@ -1025,4 +1025,37 @@ body {
 .form-grid select:focus {
 
     border-color: #556B2F;
+}
+.medusa-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: #111827;
+
+    color: white;
+
+    border: none;
+
+    padding: 10px 16px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: 0.25s;
+}
+
+.medusa-btn:hover {
+
+    background: #000;
+
+    transform: translateY(-1px);
 }

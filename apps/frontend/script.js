@@ -42,29 +42,25 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         // Get form values
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const address = document.getElementById("address").value.trim();
-        const volunteer = document.getElementById("volunteer").checked;
-        const sponsor = document.getElementById("sponsor").checked;
-        const partner = document.getElementById("partner").checked;
+const name = document.getElementById("name").value.trim();
+const phone = document.getElementById("phone").value.trim();
 
-        // Validate form
-        if (name && email && phone && address && (volunteer || sponsor || partner)) {
-            popupMessage.textContent = "Thank you for joining us! Your membership details have been submitted successfully. Together, we can make a difference!";
+// Validate form
+if (name && phone) {
 
-            // Clear form fields
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("phone").value = "";
-            document.getElementById("address").value = "";
-            document.getElementById("volunteer").checked = false;
-            document.getElementById("sponsor").checked = false;
-            document.getElementById("partner").checked = false;
-        } else {
-            popupMessage.textContent = "Oops! Please ensure all fields are filled out correctly before submitting the form.";
-        }
+    popupMessage.textContent =
+    "Thank you! You will receive updates about new products and wellness news soon.";
+
+    // Clear form fields
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+
+} else {
+
+    popupMessage.textContent =
+    "Please enter your name and phone number.";
+}
+
 
         // Display popup
         popup.style.display = "block";
@@ -132,8 +128,8 @@ function initAuth() {
 
 // Load auth state from localStorage
 function loadAuthState() {
-    const savedUser = localStorage.getItem('ayurLeafUser');
-    const savedToken = localStorage.getItem('ayurLeafAuthToken');
+    const savedUser = localStorage.getItem('divineYouUser');
+    const savedToken = localStorage.getItem('divineYouAuthToken');
     
     if (savedUser && savedToken) {
         try {
@@ -143,8 +139,8 @@ function loadAuthState() {
         } catch (error) {
             console.error('Error parsing saved user data:', error);
             // Clear corrupted data
-            localStorage.removeItem('ayurLeafUser');
-            localStorage.removeItem('ayurLeafAuthToken');
+            localStorage.removeItem('divineYouUser');
+            localStorage.removeItem('divineYouAuthToken');
         }
     }
 }
@@ -154,14 +150,14 @@ function saveAuthState(user, token) {
     if (user && token) {
         currentUser = user;
         isLoggedIn = true;
-        localStorage.setItem('ayurLeafUser', JSON.stringify(user));
-        localStorage.setItem('ayurLeafAuthToken', token);
+        localStorage.setItem('divineYouUser', JSON.stringify(user));
+        localStorage.setItem('divineYouAuthToken', token);
         console.log('Saved auth state:', { user: currentUser, hasToken: !!token });
     } else {
         currentUser = null;
         isLoggedIn = false;
-        localStorage.removeItem('ayurLeafUser');
-        localStorage.removeItem('ayurLeafAuthToken');
+        localStorage.removeItem('divineYouUser');
+        localStorage.removeItem('divineYouAuthToken');
     }
 }
 
@@ -307,6 +303,8 @@ async function handleLogin(event) {
 
     const password =
         formData.get("password");
+    const phone =
+    formData.get("phone");
 
     try {
 
@@ -342,11 +340,11 @@ async function handleLogin(event) {
         const user = data.user;
 
         localStorage.setItem(
-            "ayurLeafUser",
+            "divineYouUser",
             JSON.stringify(user)
         );
         localStorage.setItem(
-    "ayurLeafAuthToken",
+    "divineYouAuthToken",
     "custom-auth-token"
 );
 
@@ -436,6 +434,8 @@ async function handleRegister(event) {
                     email: email,
 
                     password: password,
+                    
+                    phone: phone,
 
                     role: "user"
                 })
@@ -478,10 +478,10 @@ function handleLogout() {
     console.log('Logging out user:', currentUser);
     
     // Get current token before clearing
-    const currentToken = localStorage.getItem('ayurLeafAuthToken');
+    const currentToken = localStorage.getItem('divineYouAuthToken');
     
     // Set logout flag to prevent cart persistence
-    sessionStorage.setItem('ayurLeafJustLoggedOut', 'true');
+    sessionStorage.setItem('divineYouJustLoggedOut', 'true');
     
     // Clear current user's cart completely
     clearCurrentUserCart();
@@ -520,8 +520,8 @@ function clearAuthState() {
     isLoggedIn = false;
     
     // Clear auth storage
-    localStorage.removeItem('ayurLeafUser');
-    localStorage.removeItem('ayurLeafAuthToken');
+    localStorage.removeItem('divineYouUser');
+    localStorage.removeItem('divineYouAuthToken');
     
     updateProfileDropdown();
     
@@ -543,18 +543,32 @@ function clearAuthState() {
 
 // Handle account navigation
 function handleAccount() {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown) dropdown.classList.remove('active');
-    
-    showNotification('Account page coming soon!');
-}
 
+    const dropdown =
+    document.getElementById(
+        'profileDropdown'
+    );
+
+    if (dropdown) {
+        dropdown.classList.remove(
+            'active'
+        );
+    }
+
+    window.location.href =
+    'account.html';
+}
 // Handle order history navigation
 function handleOrderHistory() {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown) dropdown.classList.remove('active');
-    
-    showNotification('Order history coming soon!');
+
+    const dropdown =
+        document.getElementById('profileDropdown');
+
+    if (dropdown)
+        dropdown.classList.remove('active');
+
+    window.location.href =
+        'orderHistory.html';
 }
 
 // Show forgot password (UI only for now)
@@ -589,9 +603,9 @@ function loadCartFromStorage() {
 // Get user-specific cart key
 function getUserCartKey() {
     if (isLoggedIn && currentUser) {
-        return `ayurLeafCart_${currentUser.id}`;
+        return `divineYouCart_${currentUser.id}`;
     }
-    return 'ayurLeafGuestCart';
+    return 'divineYouGuestCart';
 }
 
 // Clear cart for current user
@@ -600,7 +614,7 @@ function clearCurrentUserCart() {
     localStorage.removeItem(cartKey);
     
     // Also clear any old guest cart to prevent persistence
-    localStorage.removeItem('ayurLeafCart_guest');
+    localStorage.removeItem('divineYouCart_guest');
     
     cart = [];
     updateCartUI();

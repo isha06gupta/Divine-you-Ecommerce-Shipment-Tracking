@@ -7,25 +7,41 @@ const {
     getAllOrders,
     updateOrderStatus,
     updateCourier,
-    generateShipmentId,
-    getCourierOrders
+    getCourierOrders,
+    updateShipmentDetails
 } = require("../controllers/orderController");
 
 // GET ALL ORDERS
-router.get("/", getAllOrders);
+router.get(
+    "/",
+    getAllOrders
+);
 
 // CREATE ORDER
-router.post("/", createOrder);
+router.post(
+    "/",
+    createOrder
+);
 
-// UPDATE STATUS
-router.put("/:orderId/status", updateOrderStatus);
+// UPDATE ORDER STATUS
+router.put(
+    "/:orderId/status",
+    updateOrderStatus
+);
 
-// UPDATE COURIER
-router.put("/:orderId/courier", updateCourier);
+// ASSIGN COURIER
+router.put(
+    "/:orderId/courier",
+    updateCourier
+);
 
-// GENERATE SHIPMENT ID
-router.put("/:orderId/shipment", generateShipmentId);
+// SAVE TRACKING + COURIER PARTNER
+router.put(
+    "/:orderId/shipment",
+    updateShipmentDetails
+);
 
+// GET COURIER ORDERS
 router.get(
     "/courier/:email",
     getCourierOrders

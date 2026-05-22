@@ -37,6 +37,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
     "pg": "^8.20.0",
     "react-i18next": "13.5.0",
     "react-router-dom": "6.30.3",

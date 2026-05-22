@@ -1044,10 +1044,20 @@ function clearAuthState() {
 
 // Handle account navigation
 function handleAccount() {
-    const dropdown = document.getElementById('profileDropdown');
-    if (dropdown) dropdown.classList.remove('active');
-    
-    showNotification('Account page coming soon!');
+
+    const dropdown =
+    document.getElementById(
+        'profileDropdown'
+    );
+
+    if (dropdown) {
+        dropdown.classList.remove(
+            'active'
+        );
+    }
+
+    window.location.href =
+    'account.html';
 }
 
 // Handle order history navigation
@@ -2335,6 +2345,8 @@ ${checkoutState.address?.postal_code || ""}
 
     subtotal: checkoutState.subtotal,
 
+    shipping_charge: checkoutState.shipping,
+
     total_amount: checkoutState.grandTotal,
 
     payment_status: "paid",
@@ -2696,3 +2708,4 @@ globalThis.proceedToPayment = proceedToPayment;
 // Export order success modal functions for onclick handlers
 globalThis.closeOrderSuccessModal = closeOrderSuccessModal;
 globalThis.continueShopping = continueShopping;
+globalThis.handleAccount =handleAccount;

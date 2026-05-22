@@ -1,32 +1,33 @@
 const { query } = require("../db/db");
 
 // FORMAT TRACKING STATUS
-function formatTrackingStatus(status) {
+function formatTrackingStatus(status){
 
-    if (!status) return 'Order Placed';
+    if(!status) return "Order Placed";
 
     return status
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
+        .replace(/_/g," ")
+        .replace(/\b\w/g,l => l.toUpperCase());
 }
 
 // CREATE ORDER
-const createOrder = async (req, res) => {
+const createOrder = async (req,res) => {
 
-    try {
+    try{
 
         const {
             customer,
             items,
             subtotal,
+            shipping_charge,
             total_amount,
             payment_status,
             order_status,
             razorpay_payment_id
         } = req.body;
 
-        // CHECK EXISTING CUSTOMER
-        const existingCustomer = await query(
+        const existingCustomer =
+        await query(
             `
             SELECT *
             FROM customers
@@ -37,21 +38,23 @@ const createOrder = async (req, res) => {
 
         let customerId;
 
-        if (existingCustomer.rows.length > 0) {
+        if(existingCustomer.rows.length > 0){
 
-            customerId = existingCustomer.rows[0].id;
+            customerId =
+            existingCustomer.rows[0].id;
 
-        } else {
+        }else{
 
-            const customerResult = await query(
+            const customerResult =
+            await query(
                 `
-                INSERT INTO customers (
+                INSERT INTO customers(
                     first_name,
                     email,
                     phone,
                     address
                 )
-                VALUES ($1, $2, $3, $4)
+                VALUES($1,$2,$3,$4)
                 RETURNING *
                 `,
                 [
@@ -62,25 +65,27 @@ const createOrder = async (req, res) => {
                 ]
             );
 
-            customerId = customerResult.rows[0].id;
+            customerId =
+            customerResult.rows[0].id;
         }
 
-        // CREATE ORDER ID
-        const orderId = "ORD-" + Date.now();
+        const orderId =
+            "ORD-" + Date.now();
 
-        // INSERT ORDER
-        const orderResult = await query(
+        const orderResult =
+        await query(
             `
-            INSERT INTO orders (
+            INSERT INTO orders(
                 order_id,
                 customer_id,
                 razorpay_payment_id,
                 subtotal,
+                shipping_charge,
                 total_amount,
                 payment_status,
                 order_status
             )
-            VALUES ($1,$2,$3,$4,$5,$6,$7)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8)
             RETURNING *
             `,
             [
@@ -88,18 +93,19 @@ const createOrder = async (req, res) => {
                 customerId,
                 razorpay_payment_id,
                 subtotal,
+                shipping_charge || 50,
                 total_amount,
                 payment_status,
                 order_status
             ]
         );
 
-        const orderData = orderResult.rows[0];
+        const orderData =
+            orderResult.rows[0];
 
-        // INITIAL TRACKING ENTRY
         await query(
             `
-            INSERT INTO shipment_tracking (
+            INSERT INTO shipment_tracking(
                 order_id,
                 tracking_status,
                 tracking_message,
@@ -107,24 +113,23 @@ const createOrder = async (req, res) => {
                 courier_name,
                 shipment_id
             )
-            VALUES ($1,$2,$3,$4,$5,$6)
+            VALUES($1,$2,$3,$4,$5,$6)
             `,
             [
                 orderData.id,
-                'Order Placed',
-                'Your order has been placed successfully',
-                'Warehouse',
+                "Order Placed",
+                "Your order has been placed successfully",
+                "Warehouse",
                 null,
                 null
             ]
         );
 
-        // INSERT ORDER ITEMS
-        for (const item of items) {
+        for(const item of items){
 
             await query(
                 `
-                INSERT INTO order_items (
+                INSERT INTO order_items(
                     order_id,
                     product_id,
                     product_title,
@@ -132,7 +137,7 @@ const createOrder = async (req, res) => {
                     price,
                     image_url
                 )
-                VALUES ($1,$2,$3,$4,$5,$6)
+                VALUES($1,$2,$3,$4,$5,$6)
                 `,
                 [
                     orderData.id,
@@ -140,52 +145,75 @@ const createOrder = async (req, res) => {
                     item.product_title || item.title || item.name,
                     item.quantity,
                     item.price,
-                    item.thumbnail || item.image || ''
+                    item.thumbnail || item.image || ""
                 ]
             );
         }
 
         res.status(201).json({
-            success: true,
-            order: orderData
+            success:true,
+            order:orderData
         });
 
-    } catch (error) {
+    }catch(error){
 
-        console.error("ORDER ERROR:", error);
+        console.error(
+            "ORDER ERROR:",
+            error
+        );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to create order"
+            success:false,
+            message:"Failed to create order"
         });
     }
 };
 
 // GET ALL ORDERS
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req,res) => {
 
-    try {
+    try{
 
-        const ordersResult = await query(
+        const ordersResult =
+        await query(
             `
             SELECT
                 orders.*,
+
                 customers.first_name,
+                customers.last_name,
                 customers.email,
                 customers.phone,
-                customers.address
+
+                (
+                    SELECT CONCAT(
+                        sa.address_1, ', ',
+                        sa.city, ', ',
+                        sa.province, ' - ',
+                        sa.postal_code
+                    )
+                    FROM shipment_address sa
+                    WHERE sa.customer_id = customers.id
+                    ORDER BY sa.created_at DESC
+                    LIMIT 1
+                ) AS address
+
             FROM orders
+
             JOIN customers
             ON orders.customer_id = customers.id
+
             ORDER BY orders.created_at DESC
             `
         );
 
-        const orders = ordersResult.rows;
+        const orders =
+            ordersResult.rows;
 
-        for (const order of orders) {
+        for(const order of orders){
 
-            const itemsResult = await query(
+            const itemsResult =
+            await query(
                 `
                 SELECT *
                 FROM order_items
@@ -194,126 +222,155 @@ const getAllOrders = async (req, res) => {
                 [order.id]
             );
 
-            order.items = itemsResult.rows;
+            order.items =
+                itemsResult.rows;
         }
 
-        res.status(200).json({
-            success: true,
+        res.json({
+            success:true,
             orders
         });
 
-    } catch (error) {
+    }catch(error){
 
-        console.error("GET ORDERS ERROR:", error);
+        console.error(
+            "GET ORDERS ERROR:",
+            error
+        );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to fetch orders"
+            success:false,
+            message:"Failed to fetch orders"
         });
     }
 };
 
 // UPDATE ORDER STATUS
-const updateOrderStatus = async (req, res) => {
+const updateOrderStatus = async (req,res) => {
 
-    try {
+    try{
 
-        const { orderId } = req.params;
+        const { orderId } =
+            req.params;
 
-        const { status } = req.body;
+        const {
+            status,
+            location,
+            message
+        } = req.body;
 
-        // UPDATE ORDER STATUS
-        const result = await query(
+        const updatedOrder =
+        await query(
             `
             UPDATE orders
-            SET order_status = $1,
+            SET
+                order_status = $1,
                 updated_at = NOW()
             WHERE order_id = $2
             RETURNING *
             `,
-            [status, orderId]
+            [
+                status,
+                orderId
+            ]
         );
 
-        // INSERT TRACKING ENTRY
+        if(updatedOrder.rows.length === 0){
+
+            return res.status(404).json({
+                success:false,
+                message:"Order not found"
+            });
+        }
+
+        const order =
+            updatedOrder.rows[0];
+
         await query(
             `
-            INSERT INTO shipment_tracking (
+            INSERT INTO shipment_tracking(
                 order_id,
+                shipment_id,
                 tracking_status,
                 tracking_message,
                 location,
+                courier_name,
                 created_at
             )
-            VALUES (
-                $1,
-                $2,
-                $3,
-                $4,
-                NOW()
-            )
+            VALUES($1,$2,$3,$4,$5,$6,NOW())
             `,
             [
-                result.rows[0].id,
+                order.id,
+                order.shipment_id,
                 formatTrackingStatus(status),
-                `Order status updated to ${formatTrackingStatus(status)}`,
-                'Warehouse'
+                message ||
+                `Shipment updated to ${formatTrackingStatus(status)}`,
+                location || "Transit Hub",
+                order.courier_name
             ]
         );
 
         res.json({
-            success: true,
-            order: result.rows[0]
+            success:true,
+            order
         });
 
-    } catch (error) {
+    }catch(error){
 
-        console.error("UPDATE STATUS ERROR:", error);
+        console.error(
+            "UPDATE STATUS ERROR:",
+            error
+        );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to update order status"
+            success:false,
+            message:"Failed to update status"
         });
     }
 };
 
-// UPDATE COURIER
+// ASSIGN COURIER
+const updateCourier = async (req,res) => {
 
-const updateCourier = async (req, res) => {
+    try{
 
-    try {
-
-        const { orderId } = req.params;
+        const { orderId } =
+            req.params;
 
         const {
             courier_name,
-            assigned_courier_email,
-            assigned_courier_id
+            courier_id,
+            assigned_courier_email
         } = req.body;
 
-        const result = await query(
+        const result =
+        await query(
             `
             UPDATE orders
             SET
                 courier_name = $1,
-                assigned_courier_email = $2,
-                assigned_courier_id = $3
-            WHERE order_id = $4
+                courier_id = $2,
+                assigned_courier_id = $3,
+                assigned_courier_email = $4,
+                updated_at = NOW()
+            WHERE order_id = $5
             RETURNING *
             `,
             [
                 courier_name,
+                courier_id,
+                courier_id,
                 assigned_courier_email,
-                assigned_courier_id,
                 orderId
             ]
         );
 
         res.json({
-            success: true,
-            order: result.rows[0]
+            success:true,
+            order:result.rows[0]
         });
 
-    } catch (error) {
+    }catch(error){
 
         console.error(
             "UPDATE COURIER ERROR:",
@@ -321,77 +378,117 @@ const updateCourier = async (req, res) => {
         );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to assign courier"
+            success:false,
+            message:"Failed to assign courier"
         });
     }
 };
-// GENERATE SHIPMENT ID
-const generateShipmentId = async (req, res) => {
 
-    try {
+// SAVE TRACKING DETAILS
+const updateShipmentDetails = async (req,res)=>{
 
-        const { orderId } = req.params;
+    try{
+
+        const { orderId } =
+            req.params;
+
+        const {
+            tracking_id,
+            courier_name
+        } = req.body;
 
         const shipmentId =
-            "SHP-" +
-            Math.floor(100000 + Math.random() * 900000);
+            "SHIP-" + Date.now();
 
-        const result = await query(
+        const result =
+        await query(
             `
             UPDATE orders
-            SET shipment_id = $1
-            WHERE order_id = $2
+            SET
+                tracking_id = $1,
+                courier_name = $2,
+                shipment_id = $3,
+                order_status = 'shipped',
+                updated_at = NOW()
+            WHERE order_id = $4
             RETURNING *
             `,
-            [shipmentId, orderId]
+            [
+                tracking_id,
+                courier_name,
+                shipmentId,
+                orderId
+            ]
         );
 
         res.json({
-            success: true,
-            shipment_id: shipmentId,
-            order: result.rows[0]
+            success:true,
+            order:result.rows[0]
         });
 
-    } catch (error) {
+    }catch(error){
 
-        console.error("SHIPMENT ERROR:", error);
+        console.error(
+            "SHIPMENT UPDATE ERROR:",
+            error
+        );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to generate shipment ID"
+            success:false,
+            message:"Shipment update failed"
         });
     }
 };
 
-const getCourierOrders = async (req, res) => {
+// GET COURIER ORDERS
+const getCourierOrders = async (req,res) => {
 
-    try {
+    try{
 
-        const { email } = req.params;
+        const { email } =
+            req.params;
 
-        const result = await query(
+        const result =
+        await query(
             `
             SELECT
                 orders.*,
                 customers.first_name,
                 customers.email,
                 customers.phone,
-                customers.address
+
+                (
+                    SELECT CONCAT(
+                        sa.address_1, ', ',
+                        sa.city, ', ',
+                        sa.province, ' - ',
+                        sa.postal_code
+                    )
+                    FROM shipment_address sa
+                    WHERE sa.customer_id = customers.id
+                    ORDER BY sa.created_at DESC
+                    LIMIT 1
+                ) AS address
+
             FROM orders
+
             JOIN customers
             ON orders.customer_id = customers.id
+
             WHERE orders.assigned_courier_email = $1
+
             ORDER BY orders.created_at DESC
             `,
             [email]
         );
 
-        const orders = result.rows;
+        const orders =
+            result.rows;
 
-        for (const order of orders) {
+        for(const order of orders){
 
-            const itemsResult = await query(
+            const itemsResult =
+            await query(
                 `
                 SELECT *
                 FROM order_items
@@ -400,15 +497,16 @@ const getCourierOrders = async (req, res) => {
                 [order.id]
             );
 
-            order.items = itemsResult.rows;
+            order.items =
+                itemsResult.rows;
         }
 
         res.json({
-            success: true,
+            success:true,
             orders
         });
 
-    } catch (error) {
+    }catch(error){
 
         console.error(
             "GET COURIER ORDERS ERROR:",
@@ -416,16 +514,17 @@ const getCourierOrders = async (req, res) => {
         );
 
         res.status(500).json({
-            success: false,
-            message: "Failed to fetch courier orders"
+            success:false,
+            message:"Failed to fetch courier orders"
         });
     }
 };
+
 module.exports = {
     createOrder,
     getAllOrders,
     updateOrderStatus,
     updateCourier,
-    generateShipmentId,
+    updateShipmentDetails,
     getCourierOrders
 };

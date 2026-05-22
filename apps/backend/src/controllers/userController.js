@@ -1,5 +1,29 @@
+
+const multer = require("multer");
 const { query } = require("../db/db");
+
 const bcrypt = require("bcryptjs");
+const storage = multer.diskStorage({
+
+    destination: function(req, file, cb) {
+
+        cb(null, "uploads/");
+    },
+
+    filename: function(req, file, cb) {
+
+        cb(
+            null,
+            Date.now() +
+            "-" +
+            file.originalname
+        );
+    }
+});
+
+const upload = multer({
+    storage
+});
 
 // REGISTER USER
 const registerUser = async (req, res) => {
@@ -7,14 +31,13 @@ const registerUser = async (req, res) => {
     try {
 
         const {
-    first_name,
-    last_name,
-    email,
-    phone,
-    password,
-    role,
-    company_name
-} = req.body;
+            first_name,
+            last_name,
+            email,
+            password,
+            role,
+            phone
+        } = req.body;
 
         // CHECK EXISTING USER
         const existingUser = await query(
@@ -34,32 +57,31 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // INSERT USER
+        // HASH PASSWORD
         const hashedPassword =
-await bcrypt.hash(password, 10);
+            await bcrypt.hash(password, 10);
+
+        // INSERT USER
         const result = await query(
             `
             INSERT INTO customers (
-    first_name,
-    last_name,
-    email,
-    phone,
-    password,
-    role,
-    company_name
-)
-VALUES ($1,$2,$3,$4,$5,$6,$7)
-RETURNING *
+                first_name,
+                last_name,
+                email,
+                password,
+                role,
+                phone
+            )
+            VALUES ($1,$2,$3,$4,$5,$6)
+            RETURNING *
             `,
             [
                 first_name,
                 last_name,
                 email,
-                phone,
                 hashedPassword,
                 role || "user",
-                company_name || null
-
+                phone
             ]
         );
 
@@ -113,30 +135,33 @@ const loginUser = async (req, res) => {
 
         // PASSWORD CHECK
         const isPasswordValid =
-await bcrypt.compare(
-    password,
-    user.password
-);
+            await bcrypt.compare(
+                password,
+                user.password
+            );
 
-if (!isPasswordValid) {
+        if (!isPasswordValid) {
 
-    return res.status(401).json({
-        success: false,
-        message: "Invalid password"
-    });
-}
+            return res.status(401).json({
+                success: false,
+                message: "Invalid password"
+            });
+        }
 
         res.json({
-            success: true,
-            user: {
-                id: user.id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                role: user.role,
-                company_name: user.company_name
-            }
-        });
+    success: true,
+    user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        address: user.address,
+        company_name: user.company_name,
+        profile_photo: user.profile_photo
+    }
+});
 
     } catch (error) {
 
@@ -193,8 +218,260 @@ const getAllCouriers = async (req, res) => {
     }
 };
 
+// UPDATE CUSTOMER PROFILE
+const updateCustomer = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const {
+            first_name,
+            last_name,
+            phone,
+            address
+        } = req.body;
+
+        const result = await query(
+            `
+            UPDATE customers
+            SET
+                first_name = $1,
+                last_name = $2,
+                phone = $3,
+                address = $4,
+                updated_at = NOW()
+            WHERE id = $5
+            RETURNING *
+            `,
+            [
+                first_name,
+                last_name,
+                phone,
+                address,
+                id
+            ]
+        );
+
+        res.json({
+            success: true,
+            customer: result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(
+            "UPDATE CUSTOMER ERROR:",
+            error
+        );
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to update profile"
+        });
+    }
+};
+const uploadProfilePhoto = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const imagePath =
+            req.file
+            ? `/uploads/${req.file.filename}`
+            : null;
+
+        const result = await query(
+            `
+            UPDATE customers
+            SET profile_photo = $1
+            WHERE id = $2
+            RETURNING *
+            `,
+            [
+                imagePath,
+                id
+            ]
+        );
+
+        res.json({
+            success:true,
+            photo:imagePath,
+            customer:result.rows[0]
+        });
+
+    } catch(error){
+
+        console.error(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Photo upload failed"
+        });
+    }
+};
+
+const changePassword = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const {
+            currentPassword,
+            newPassword
+        } = req.body;
+
+        const userResult = await query(
+            `
+            SELECT *
+            FROM customers
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        if(userResult.rows.length === 0){
+
+            return res.status(404).json({
+                success:false,
+                message:"User not found"
+            });
+        }
+
+        const user =
+            userResult.rows[0];
+
+        const isMatch =
+            await bcrypt.compare(
+                currentPassword,
+                user.password
+            );
+
+        if(!isMatch){
+
+            return res.status(401).json({
+                success:false,
+                message:"Current password incorrect"
+            });
+        }
+
+        const hashedPassword =
+            await bcrypt.hash(
+                newPassword,
+                10
+            );
+
+        await query(
+            `
+            UPDATE customers
+            SET password = $1
+            WHERE id = $2
+            `,
+            [
+                hashedPassword,
+                id
+            ]
+        );
+
+        res.json({
+            success:true,
+            message:"Password updated"
+        });
+
+    } catch(error){
+
+        console.error(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Password update failed"
+        });
+    }
+};
+
+const getUserStats = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const totalOrders = await query(
+            `
+            SELECT COUNT(*) AS total
+            FROM orders
+            WHERE customer_id = $1
+            `,
+            [id]
+        );
+
+        const deliveredOrders = await query(
+            `
+            SELECT COUNT(*) AS total
+            FROM orders
+            WHERE customer_id = $1
+            AND LOWER(order_status) = 'delivered'
+            `,
+            [id]
+        );
+
+        const pendingOrders = await query(
+            `
+            SELECT COUNT(*) AS total
+            FROM orders
+            WHERE customer_id = $1
+            AND LOWER(order_status) != 'delivered'
+            `,
+            [id]
+        );
+
+        const addressResult = await query(
+            `
+            SELECT *
+            FROM shipment_address
+            WHERE customer_id = $1
+            ORDER BY created_at DESC
+            LIMIT 1
+            `,
+            [id]
+        );
+
+        res.json({
+            success:true,
+
+            stats:{
+                total:
+                totalOrders.rows[0].total,
+
+                delivered:
+                deliveredOrders.rows[0].total,
+
+                pending:
+                pendingOrders.rows[0].total
+            },
+
+            address:
+            addressResult.rows[0] || null
+        });
+
+    } catch(error){
+
+        console.error(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Failed to load stats"
+        });
+    }
+};
 module.exports = {
     registerUser,
     loginUser,
-    getAllCouriers
+    getAllCouriers,
+    updateCustomer,
+    uploadProfilePhoto,
+    changePassword,
+    getUserStats,
+    upload
 };

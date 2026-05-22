@@ -1,5 +1,5 @@
 const currentUser =
-JSON.parse(localStorage.getItem("ayurLeafUser"));
+JSON.parse(localStorage.getItem("divineYouUser"));
 
 console.log("Courier User:", currentUser);
 
@@ -15,7 +15,7 @@ if (
 let allOrders = [];
 let filteredShipments = [];
 let currentView = 'cards';
-let currentCourier = 'Delhivery'; // Simulate logged-in courier
+let currentCourier =currentUser.company_name || "";
 
 // Delivery status options
 const DELIVERY_STATUSES = [
@@ -26,156 +26,228 @@ const DELIVERY_STATUSES = [
     'delivered'
 ];
 
+async function updateShipmentStatus(
+    orderId,
+    status
+) {
+
+    if (!status) return;
+
+    try {
+
+        const response =
+        await fetch(
+            `http://localhost:7000/api/orders/${orderId}/status`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    status,
+
+                    location:
+                        "Courier Hub",
+
+                    message:
+                        `Shipment moved to ${status.replace(/_/g, ' ')}`
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        if (data.success) {
+
+            showNotification(
+                "Shipment status updated",
+                "success"
+            );
+
+            loadOrders();
+
+        } else {
+
+            showNotification(
+                "Update failed",
+                "error"
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        showNotification(
+            "Status update failed",
+            "error"
+        );
+    }
+}
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeDashboard();
 });
 
 function initializeDashboard() {
+
+    const courierName =
+        `${currentUser.first_name || ""} ${currentUser.last_name || ""}`;
+
+    const courierNameElement =
+        document.getElementById("courierName");
+
+    if (courierNameElement) {
+
+        courierNameElement.textContent =
+            courierName;
+    }
+
     loadOrders();
+
     setupEventListeners();
-    renderDashboard();
 }
 
 // Load orders from localStorage and filter for current courier
-function loadOrders() {
+async function loadOrders() {
+
     try {
-        const ordersData = localStorage.getItem('orders');
-        if (ordersData) {
-            allOrders = JSON.parse(ordersData);
-            // Normalize order data for compatibility
-            allOrders = allOrders.map(order => {
-                // Support both old and new total field names
-                const totalAmount = order.grandTotal || order.total || order.totalAmount || 0;
-                
-                // Support both customer object and flat structure
-                const customerName = order.customer?.name || order.customerName || order.name || 'N/A';
-                const customerEmail = order.customer?.email || order.email || 'N/A';
-                const customerPhone = order.customer?.phone || order.phone || 'N/A';
-                const customerAddress = order.customer?.address || order.address || 'N/A';
-                
-                // Use created_at or orderDate, fallback to current date
-                const orderDate = order.created_at || order.orderDate || new Date().toISOString();
-                
-                return {
-                    ...order,
-                    // Normalize fields
-                    totalAmount: totalAmount,
-                    orderStatus: order.orderStatus || order.status || 'pending',
-                    courierName: order.courierName || order.courier || '',
-                    shipmentId: order.shipmentId || order.trackingId || '',
-                    trackingId: order.trackingId || '',
-                    deliveryStatus: order.deliveryStatus || 'assigned',
-                    deliveryDetails: order.deliveryDetails || null,
-                    paymentStatus: order.paymentStatus || 'paid',
-                    // Ensure customer object exists
-                    customer: {
-                        name: customerName,
-                        email: customerEmail,
-                        phone: customerPhone,
-                        address: customerAddress
-                    },
-                    // Ensure date field exists
-                    orderDate: orderDate,
-                    // Keep original fields for compatibility
-                    orderId: order.orderId || order.id || `ORD-${Date.now()}`
-                };
-            });
-        } else {
-            // Create sample orders for testing if no orders exist
-            createSampleOrders();
-        }
-        
-        // Filter orders for current courier only
-        filteredShipments = allOrders.filter(order => 
-            order.courierName === currentCourier
+
+        const response = await fetch(
+            "http://localhost:7000/api/orders"
         );
+
+        const data = await response.json();
+
+        console.log(
+            "Courier Orders Response:",
+            data
+        );
+        console.log(
+    "FIRST ORDER:",
+    data.orders?.[0]
+);
+
+        if (!data.success) {
+
+            throw new Error(
+                "Failed to fetch orders"
+            );
+        }
+
+        allOrders = (data.orders || []).map(order => {
+
+    return {
+
+        ...order,
+
+        orderId: order.order_id,
+
+        totalAmount: Number(
+            order.total_amount || 0
+        ),
+
+        deliveryStatus:
+            order.order_status || "assigned",
+
+
+        paymentStatus:
+            order.payment_status || "pending",
+    
+        trackingId:
+            order.tracking_id || "",
+
+        shipmentId:
+        order.shipment_id || order.shipmentId ||"",
+
+        orderDate:
+            order.created_at,
+
+        courierName:
+            order.courier_name || "",
+
+        customer: {
+
+            name:
+                `${order.first_name || ""} ${order.last_name || ""}`,
+
+            email:
+                order.email || "N/A",
+
+            phone:
+                order.phone || "N/A",
+
+            address:
+                order.address || "N/A"
+        },
+
+        products:
+            (order.items || []).map(item => ({
+
+                name:
+                    item.product_title,
+
+                quantity:
+                    item.quantity,
+
+                price:
+                    Number(item.price || 0),
+
+                image:
+                    item.image_url
+            }))
+    };
+
+});
+
+        // FILTER ONLY CURRENT COURIER ORDERS
+        filteredShipments = allOrders.filter(order => {
+
+            const orderCourierId =
+    order.assigned_courier_id ||
+    order.courier_id ||
+    order.courierid ||
+    order.courierId ||
+    order["courier_id"];
+
+    console.log(
+    "ORDER COURIER:",
+    orderCourierId,
+    "CURRENT USER:",
+    currentUser.id
+);
+
+return (
+    Number(orderCourierId) ===
+Number(currentUser.id)
+);
+
+        });
+
+        console.log(
+            "Filtered Courier Orders:",
+            filteredShipments
+        );
+
+        renderDashboard();
+
     } catch (error) {
-        console.error('Error loading orders:', error);
+
+        console.error(
+            "LOAD ORDERS ERROR:",
+            error
+        );
+
         allOrders = [];
         filteredShipments = [];
-    }
-}
 
-// Create sample orders for testing
-function createSampleOrders() {
-    const sampleOrders = [
-        {
-            orderId: 'ORD-001',
-            created_at: new Date('2024-05-10T15:45:00').toISOString(),
-            grandTotal: 299.99,
-            paymentStatus: 'paid',
-            orderStatus: 'shipped',
-            courierName: 'Delhivery',
-            shipmentId: 'SHP-123456',
-            trackingId: 'TRK-583920',
-            deliveryStatus: 'in_transit',
-            deliveryDetails: {
-                date: '2024-05-11',
-                time: '14:30',
-                location: 'Mumbai Sorting Facility'
-            },
-            customer: {
-                name: 'John Doe',
-                email: 'john@example.com',
-                phone: '+1234567890',
-                address: '123 Main St, City, State 12345'
-            },
-            products: [
-                { name: 'Ayurvedic Shampoo', quantity: 2, price: 49.99 },
-                { name: 'Herbal Soap', quantity: 4, price: 29.99 }
-            ]
-        },
-        {
-            orderId: 'ORD-002',
-            created_at: new Date('2024-05-11T10:30:00').toISOString(),
-            total: 199.99,
-            paymentStatus: 'paid',
-            orderStatus: 'shipped',
-            courierName: 'Delhivery',
-            shipmentId: 'SHP-789012',
-            trackingId: 'TRK-483921',
-            deliveryStatus: 'out_for_delivery',
-            customer: {
-                name: 'Jane Smith',
-                email: 'jane@example.com',
-                phone: '+0987654321',
-                address: '456 Oak Ave, Town, State 67890'
-            },
-            products: [
-                { name: 'Neem Face Pack', quantity: 1, price: 99.99 },
-                { name: 'Aloe Vera Gel', quantity: 2, price: 49.99 }
-            ]
-        },
-        {
-            orderId: 'ORD-003',
-            created_at: new Date('2024-05-12T09:15:00').toISOString(),
-            totalAmount: 149.99,
-            paymentStatus: 'paid',
-            orderStatus: 'processing',
-            courierName: 'Delhivery',
-            shipmentId: 'SHP-345678',
-            trackingId: '',
-            deliveryStatus: 'assigned',
-            customer: {
-                name: 'Bob Johnson',
-                email: 'bob@example.com',
-                phone: '+1122334455',
-                address: '789 Pine Rd, Village, State 13579'
-            },
-            products: [
-                { name: 'Turmeric Capsules', quantity: 3, price: 49.99 }
-            ]
-        }
-    ];
-    
-    allOrders = sampleOrders;
-    localStorage.setItem('orders', JSON.stringify(allOrders));
-    
-    // Filter for current courier
-    filteredShipments = allOrders.filter(order => 
-        order.courierName === currentCourier
-    );
+        renderDashboard();
+    }
 }
 
 // Setup event listeners
@@ -312,7 +384,10 @@ function createShipmentCard(shipment) {
     const customerEmail = shipment.customer?.email || shipment.email || 'N/A';
     const orderDate = formatOrderDate(shipment.orderDate || shipment.created_at);
     const amount = `₹${(shipment.totalAmount || 0).toFixed(2)}`;
-    const trackingId = shipment.trackingId || 'Not generated';
+const trackingId =
+    shipment.trackingId ||
+    shipment.tracking_id ||
+    'Not generated';
     const progressPercentage = getProgressPercentage(shipment.deliveryStatus);
     
     card.innerHTML = `
@@ -370,8 +445,11 @@ function createShipmentTableRow(shipment) {
     const customerEmail = shipment.customer?.email || shipment.email || 'N/A';
     const orderDate = formatOrderDate(shipment.orderDate || shipment.created_at);
     const amount = `₹${(shipment.totalAmount || 0).toFixed(2)}`;
-    const trackingId = shipment.trackingId || 'Not generated';
-    
+    const trackingId =
+    shipment.trackingId ||
+    shipment.tracking_id ||
+    'Not generated';
+
     row.innerHTML = `
         <td><strong>${shipment.orderId}</strong></td>
         <td>${customerName}</td>
@@ -456,47 +534,123 @@ function createTrackingTimeline(deliveryStatus) {
 }
 
 // Create shipment actions
-function createShipmentActions(shipment) {
-    const hasTrackingId = shipment.trackingId && shipment.trackingId.trim() !== '';
-    const isDelivered = shipment.deliveryStatus === 'delivered';
-    
+function createShipmentActions(shipment){
+
+    const trackingId =
+        shipment.trackingId || "";
+
+    const courierPartner =
+        shipment.courier_partner || "";
+
     return `
-        <button class="action-btn view-btn-action" onclick="viewShipmentDetails('${shipment.orderId}')">
-            <i class="fas fa-eye"></i> View
+
+        <button
+            class="action-btn view-btn-action"
+            onclick="viewShipmentDetails('${shipment.orderId}')"
+        >
+            <i class="fas fa-eye"></i>
+            View
         </button>
-        ${!hasTrackingId ? `
-            <button class="action-btn generate-btn" onclick="generateTrackingId('${shipment.orderId}')">
-                <i class="fas fa-tag"></i> Generate ID
+
+        <div class="manual-entry-box">
+
+            <input
+                type="text"
+                class="manual-input"
+                id="tracking-${shipment.orderId}"
+                placeholder="Enter Tracking ID"
+                value="${trackingId}"
+            >
+
+            <input
+                type="text"
+                class="manual-input"
+                id="partner-${shipment.orderId}"
+                placeholder="Courier Partner (DTDC, Delhivery...)"
+                value="${courierPartner}"
+            >
+
+            <button
+                class="action-btn save-manual-btn"
+                onclick="saveTrackingDetails('${shipment.orderId}')"
+            >
+                <i class="fas fa-save"></i>
+                Save
             </button>
-        ` : ''}
-        ${!isDelivered ? `
-            <button class="action-btn update-btn" onclick="openDeliveryModal('${shipment.orderId}')">
-                <i class="fas fa-edit"></i> Update Status
-            </button>
-        ` : ''}
+
+        </div>
     `;
 }
 
-// Generate tracking ID
-function generateTrackingId(orderId) {
-    const shipmentIndex = filteredShipments.findIndex(shipment => shipment.orderId === orderId);
-    if (shipmentIndex !== -1 && !filteredShipments[shipmentIndex].trackingId) {
-        const trackingId = `TRK-${Math.floor(100000 + Math.random() * 900000)}`;
-        
-        // Update in filtered shipments
-        filteredShipments[shipmentIndex].trackingId = trackingId;
-        
-        // Update in all orders
-        const orderIndex = allOrders.findIndex(order => order.orderId === orderId);
-        if (orderIndex !== -1) {
-            allOrders[orderIndex].trackingId = trackingId;
+async function saveTrackingDetails(orderId){
+
+    const trackingId =
+        document.getElementById(
+            `tracking-${orderId}`
+        ).value.trim();
+
+    const courierPartner =
+        document.getElementById(
+            `partner-${orderId}`
+        ).value.trim();
+
+    if(!trackingId || !courierPartner){
+
+        showNotification(
+            "Enter tracking ID and courier partner",
+            "warning"
+        );
+
+        return;
+    }
+
+    try{
+
+        const response =
+        await fetch(
+            `http://localhost:7000/api/orders/${orderId}/shipment`,
+            {
+                method:"PUT",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+                    tracking_id:trackingId,
+                    courier_name:courierPartner
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        if(data.success){
+
+            showNotification(
+                "Shipment details saved",
+                "success"
+            );
+
+            loadOrders();
+
+        }else{
+
+            showNotification(
+                "Failed to save",
+                "error"
+            );
         }
-        
-        saveOrders();
-        renderDashboard();
-        showNotification(`Tracking ID generated: ${trackingId}`, 'success');
-    } else if (filteredShipments[shipmentIndex]?.trackingId) {
-        showNotification('Tracking ID already exists', 'warning');
+
+    }catch(error){
+
+        console.error(error);
+
+        showNotification(
+            "Server error",
+            "error"
+        );
     }
 }
 
@@ -820,11 +974,11 @@ function handleSearch(e) {
     
     if (searchTerm === '') {
         filteredShipments = allOrders.filter(order => 
-            order.courierName === currentCourier
+            Number(order.assigned_courier_id) === Number(currentUser.id)
         );
     } else {
         filteredShipments = allOrders.filter(order => {
-            const isAssignedCourier = order.courierName === currentCourier;
+            const isAssignedCourier = Number(order.assigned_courier_id) === Number(currentUser.id);
             const customerName = (order.customer?.name || order.customerName || '').toLowerCase();
             const customerEmail = (order.customer?.email || order.email || '').toLowerCase();
             const orderId = order.orderId.toLowerCase();
@@ -856,7 +1010,7 @@ function clearSearchInput() {
     }
     
     filteredShipments = allOrders.filter(order => 
-        order.courierName === currentCourier
+        Number(order.assigned_courier_id) === Number(currentUser.id)
     );
     renderShipments();
 }
@@ -868,11 +1022,11 @@ function filterShipments() {
     
     if (selectedStatus === '') {
         filteredShipments = allOrders.filter(order => 
-            order.courierName === currentCourier
+            Number(order.assigned_courier_id) === Number(currentUser.id)
         );
     } else {
         filteredShipments = allOrders.filter(order => 
-            order.courierName === currentCourier && 
+            Number(order.assigned_courier_id) === Number(currentUser.id) && 
             order.deliveryStatus === selectedStatus
         );
     }
@@ -910,12 +1064,10 @@ function toggleEmptyState() {
 
 // Save orders to localStorage
 function saveOrders() {
-    try {
-        localStorage.setItem('orders', JSON.stringify(allOrders));
-    } catch (error) {
-        console.error('Error saving orders:', error);
-        showNotification('Error saving orders', 'error');
-    }
+
+    console.log(
+        "Orders updated locally"
+    );
 }
 
 // Show notification
@@ -1033,10 +1185,32 @@ function markAllShipped() {
 
 // Handle logout
 function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        // Redirect to main site or login page
-        window.location.href = 'index.html';
-    }
+
+    // REMOVE USER SESSION
+    localStorage.removeItem(
+        "divineYouUser"
+    );
+
+    localStorage.removeItem(
+        "divineYouAuthToken"
+    );
+
+    // REMOVE ALL POSSIBLE CARTS
+    Object.keys(localStorage).forEach(key => {
+
+        if (
+            key.startsWith("ayurLeafCart_") ||
+            key === "ayurLeafGuestCart"
+        ) {
+
+            localStorage.removeItem(key);
+        }
+    });
+
+    // REDIRECT DIRECTLY
+    window.location.replace(
+        "index.html"
+    );
 }
 
 // Utility functions
