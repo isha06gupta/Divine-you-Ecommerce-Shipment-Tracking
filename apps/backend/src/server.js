@@ -46,7 +46,8 @@ app.use("/api/tracking", trackingRoutes );
 
 app.use( "/api/address", addressRoutes );
 
-const PORT = 7000;
+const PORT =
+    process.env.PORT || 7000;
 
 app.listen(PORT, () => {
 
