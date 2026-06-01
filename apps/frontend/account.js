@@ -1,5 +1,8 @@
 const currentUser = JSON.parse(localStorage.getItem("divineYouUser"));
-
+const token =
+localStorage.getItem(
+    "divineYouAuthToken"
+);
 if (!currentUser) window.location.href = "index.html";
 
 const firstName = document.getElementById("firstName");
@@ -54,7 +57,14 @@ async function loadStats() {
     try {
 
         const response =
-        await fetch(`http://localhost:7000/api/users/${currentUser.id}/stats`);
+        await fetch(
+    `http://localhost:7000/api/users/${currentUser.id}/stats`,
+    {
+        headers:{
+            "Authorization": `Bearer ${token}`
+        }
+    }
+);
 
         const data = await response.json();
 
@@ -143,8 +153,9 @@ document.getElementById("accountForm").addEventListener("submit", async function
                     method:"PUT",
 
                     headers:{
-                        "Content-Type":"application/json"
-                    },
+    "Content-Type":"application/json",
+    "Authorization": `Bearer ${token}`
+},
 
                     body:JSON.stringify({
                         currentPassword,
@@ -174,8 +185,9 @@ document.getElementById("accountForm").addEventListener("submit", async function
                 method:"PUT",
 
                 headers:{
-                    "Content-Type":"application/json"
-                },
+    "Content-Type":"application/json",
+    "Authorization": `Bearer ${token}`
+},
 
                 body:JSON.stringify({
 
@@ -200,8 +212,9 @@ document.getElementById("accountForm").addEventListener("submit", async function
                 method:"PUT",
 
                 headers:{
-                    "Content-Type":"application/json"
-                },
+    "Content-Type":"application/json",
+    "Authorization": `Bearer ${token}`
+},
 
                 body:JSON.stringify({
 
@@ -282,8 +295,9 @@ document.getElementById("profileUpload").addEventListener(
             await fetch(
                 `http://localhost:7000/api/users/${currentUser.id}/photo`,
                 {
-                    method:"POST",
-                    body:formData
+                    method:"POST",body:formData,headers:{
+    "Authorization": `Bearer ${token}`
+},
                 }
             );
 

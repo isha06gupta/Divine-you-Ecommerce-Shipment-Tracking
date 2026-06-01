@@ -904,3 +904,22 @@ h1, h2, h3, h4, h5, h6 {
     align-items:center;
     gap:8px;
 }
+.courier-info,
+.tracking-info {
+
+    font-size: 13px;
+
+    color: #5e6f52;
+
+    margin-top: 6px;
+
+    text-align: right;
+
+    word-break: break-word;
+}
+
+.courier-info strong,
+.tracking-info strong {
+
+    color: #4b5d3a;
+}

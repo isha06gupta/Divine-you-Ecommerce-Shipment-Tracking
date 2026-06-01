@@ -1,5 +1,9 @@
 const currentUser =
 JSON.parse(localStorage.getItem("divineYouUser"));
+const token =
+localStorage.getItem(
+    "divineYouAuthToken"
+);
 
 ("Current User:", currentUser);
 
@@ -51,8 +55,13 @@ async function loadCouriers() {
 
         const response =
         await fetch(
-            "http://localhost:7000/api/users/couriers"
-        );
+    "http://localhost:7000/api/users/couriers",
+    {
+        headers:{
+            "Authorization": `Bearer ${token}`
+        }
+    }
+);
 
         const data =
         await response.json();
@@ -79,7 +88,14 @@ async function loadOrders() {
 
     try {
 
-        const response = await fetch("http://localhost:7000/api/orders");
+        const response = await fetch(
+    "http://localhost:7000/api/orders",
+    {
+        headers:{
+            "Authorization": `Bearer ${token}`
+        }
+    }
+);
 
         const data = await response.json();
 
@@ -655,7 +671,8 @@ async function updateOrderStatus(orderId, newStatus) {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     order_status: newStatus
@@ -709,7 +726,8 @@ async function updateOrderStatus(orderId, newStatus) {
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
 
@@ -758,7 +776,8 @@ async function updateCourierCompany(orderId, newCourier) {
             {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
 
@@ -823,7 +842,8 @@ async function assignCourierPerson(
                 method: "PUT",
 
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
 
                 body: JSON.stringify({
@@ -1872,7 +1892,8 @@ const password =document.getElementById(
 
                     headers: {
                         "Content-Type":
-                        "application/json"
+                        "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
 
                     body: JSON.stringify({

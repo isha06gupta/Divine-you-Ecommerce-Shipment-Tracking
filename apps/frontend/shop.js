@@ -7,9 +7,14 @@ let cart = [];
 // Modal state
 let selectedProduct = null;
 let selectedVariant = null;
-
+let modalImageIndex = 0;
 // Auth state
-let currentUser = null;
+let currentUser =
+JSON.parse(
+    localStorage.getItem(
+        "divineYouUser"
+    )
+) || null;
 let isLoggedIn = false;
 
 // Address management state
@@ -40,11 +45,11 @@ const totalAmount = document.getElementById('totalAmount');
 // Clear any old cart data on page load to ensure fresh start
 function clearOldCartData() {
     // Clear old guest cart key format if exists
-    localStorage.removeItem('ayurLeafCart_guest');
+    localStorage.removeItem('divineYouCart_guest');
     
     // If user is not logged in, ensure guest cart is empty on fresh load
     if (!isLoggedIn) {
-        const guestCart = localStorage.getItem('ayurLeafGuestCart');
+        const guestCart = localStorage.getItem('divineYouGuestCart');
         if (guestCart) {
             try {
                 const parsed = JSON.parse(guestCart);
@@ -52,14 +57,14 @@ function clearOldCartData() {
                 // This prevents showing old cart after logout
                 if (parsed.length > 0) {
                     // Check if we have a logout flag
-                    const wasLoggedOut = sessionStorage.getItem('ayurLeafJustLoggedOut');
+                    const wasLoggedOut = sessionStorage.getItem('divineYouJustLoggedOut');
                     if (wasLoggedOut === 'true') {
-                        localStorage.removeItem('ayurLeafGuestCart');
-                        sessionStorage.removeItem('ayurLeafJustLoggedOut');
+                        localStorage.removeItem('divineYouGuestCart');
+                        sessionStorage.removeItem('divineYouJustLoggedOut');
                     }
                 }
             } catch (e) {
-                localStorage.removeItem('ayurLeafGuestCart');
+                localStorage.removeItem('divineYouGuestCart');
             }
         }
     }
@@ -94,8 +99,6 @@ function fetchProducts() {
     )
     .then(response => {
 
-        console.log('API Response status:', response.status);
-
         if (!response.ok) {
             throw new Error(
                 `Failed to load products: ${response.status} ${response.statusText}`
@@ -107,8 +110,6 @@ function fetchProducts() {
 
     .then(data => {
 
-        console.log('Fetched products:', data);
-
         products = data.products.map((product, index) => ({
 
             id: product.id,
@@ -117,9 +118,22 @@ function fetchProducts() {
 
             subtitle: product.subtitle || '',
 
-            image:
-                product.thumbnail ||
-                'https://via.placeholder.com/300x200?text=No+Image',
+            images:
+    product.images && product.images.length > 0
+        ? product.images.map(img => img.url)
+        : [
+            product.thumbnail ||
+            'https://via.placeholder.com/300x200?text=No+Image'
+        ],
+
+image:
+    product.thumbnail ||
+    (
+        product.images &&
+        product.images[0] &&
+        product.images[0].url
+    ) ||
+    'https://via.placeholder.com/300x200?text=No+Image',
 
             description: product.description || '',
 
@@ -161,32 +175,172 @@ function renderProducts(products) {
 
 // Create product card HTML
 function createProductCard(product) {
+
+    const images = product.images || [product.image];
+
     return `
-        <div class="product-card" onclick="openProductModal('${product.id}')" style="cursor: pointer;">
-            <img src="${product.image}" alt="${product.name}" class="product-image">
-            <div class="product-info">
-                <h3 class="product-name">${product.name}</h3>
-                ${product.subtitle ? `<p class="product-subtitle">${product.subtitle}</p>` : ''}
+        <div class="product-card">
+
+            <div
+                class="product-image-slider"
+                onclick="openProductModal('${product.id}')"
+            >
+
+                <button
+                    class="slider-btn left"
+                    onclick="
+                        event.stopPropagation();
+                        changeSlide('${product.id}', -1)
+                    "
+                >
+                    &#10094;
+                </button>
+
+                <img
+                    src="${images[0]}"
+                    alt="${product.name}"
+                    class="product-image"
+                    id="image-${product.id}"
+                    data-index="0"
+                >
+
+                <button
+                    class="slider-btn right"
+                    onclick="
+                        event.stopPropagation();
+                        changeSlide('${product.id}', 1)
+                    "
+                >
+                    &#10095;
+                </button>
+
+            </div>
+
+            <div
+                class="product-info"
+                onclick="openProductModal('${product.id}')"
+                style="cursor:pointer;"
+            >
+
+                <h3 class="product-name">
+                    ${product.name}
+                </h3>
+
+                ${
+                    product.subtitle
+                    ?
+                    `<p class="product-subtitle">
+                        ${product.subtitle}
+                    </p>`
+                    :
+                    ''
+                }
+
                 <div class="product-rating">
-                    <span class="rating-stars">⭐ ${product.rating}</span>
-                    <span class="rating-count">(${product.ratingCount})</span>
+                    <span class="rating-stars">
+                        ⭐ ${product.rating}
+                    </span>
+
+                    <span class="rating-count">
+                        (${product.ratingCount})
+                    </span>
                 </div>
-                ${product.weight ? `<span class="weight-badge">${product.weight}</span>` : ''}
+
+                ${
+                    product.weight
+                    ?
+                    `<span class="weight-badge">
+                        ${product.weight}
+                    </span>`
+                    :
+                    ''
+                }
+
                 <div class="price-section">
-                    <span class="current-price">₹${product.currentPrice}</span>
-                    <span class="old-price">${product.oldPrice ? `₹${product.oldPrice}` : ''}</span>
+                    <span class="current-price">
+                        ₹${product.currentPrice}
+                    </span>
+
+                    <span class="old-price">
+                        ${
+                            product.oldPrice
+                            ?
+                            `₹${product.oldPrice}`
+                            :
+                            ''
+                        }
+                    </span>
                 </div>
-                <button class="add-to-cart-btn" onclick="event.stopPropagation(); openProductModal('${product.id}')">
+
+                <button
+                    class="add-to-cart-btn"
+                    onclick="
+                        event.stopPropagation();
+                        openProductModal('${product.id}')
+                    "
+                >
                     Add
                 </button>
+
             </div>
+
         </div>
     `;
 }
+function changeSlide(productId, direction) {
+
+    const product =
+        products.find(
+            p => p.id === productId
+        );
+
+    if (
+        !product ||
+        !product.images ||
+        product.images.length === 0
+    ) {
+        return;
+    }
+
+    const imageElement =
+        document.getElementById(
+            `image-${productId}`
+        );
+
+    let currentIndex =
+        parseInt(
+            imageElement.dataset.index
+        );
+
+    currentIndex += direction;
+
+    if (
+        currentIndex <
+        0
+    ) {
+        currentIndex =
+        product.images.length - 1;
+    }
+
+    if (
+        currentIndex >=
+        product.images.length
+    ) {
+        currentIndex = 0;
+    }
+
+    imageElement.src =
+        product.images[currentIndex];
+
+    imageElement.dataset.index =
+        currentIndex;
+}
+
+window.changeSlide =
+    changeSlide;
 
 // Add product to cart
 function addToCart(productId) {
-    console.log('Adding product to cart:', productId);
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
@@ -309,9 +463,9 @@ function loadCartFromStorage() {
 // Get user-specific cart key
 function getUserCartKey() {
     if (isLoggedIn && currentUser) {
-        return `ayurLeafCart_${currentUser.id}`;
+        return `divineYouCart_${currentUser.id}`;
     }
-    return 'ayurLeafGuestCart';
+    return 'divineYouGuestCart';
 }
 
 // Clear cart for current user
@@ -320,7 +474,7 @@ function clearCurrentUserCart() {
     localStorage.removeItem(cartKey);
     
     // Also clear any old guest cart to prevent persistence
-    localStorage.removeItem('ayurLeafCart_guest');
+    localStorage.removeItem('divineYouCart_guest');
     
     cart = [];
     updateCartUI();
@@ -390,10 +544,7 @@ globalThis.showForgotPassword = showForgotPassword;
 function getVariantPrice(variant) {
     if (!variant) return 0;
     
-    // Debug: Log calculated_price structure
-    console.log('Variant calculated_price:', variant.calculated_price);
-    
-    let price = 0;
+        let price = 0;
     
     // Priority 1: calculated_price.calculated_amount (Medusa v2)
     if (variant.calculated_price?.calculated_amount) {
@@ -416,24 +567,74 @@ function openProductModal(productId) {
     selectedVariant = null;
 
     // Populate modal with product data
-    document.getElementById('modalProductImage').src = product.image;
-    document.getElementById('modalProductImage').alt = product.name;
+    modalImageIndex = 0;
+
+const modalImage =
+document.getElementById(
+    'modalProductImage'
+);
+
+modalImage.src =
+    product.images[0];
+
+modalImage.alt =
+    product.name;
+
+modalImage.dataset.index = 0;
+window.changeSlide = changeSlide;
     document.getElementById('modalProductName').textContent = product.name;
     document.getElementById('modalProductSubtitle').textContent = product.subtitle || '';
     document.getElementById('modalRatingStars').textContent = `⭐ ${product.rating}`;
     document.getElementById('modalRatingCount').textContent = `(${product.ratingCount})`;
     document.getElementById('modalProductDescription').textContent = product.description || 'No description available.';
 
+    function changeModalSlide(direction) {
+
+    if (
+        !selectedProduct ||
+        !selectedProduct.images ||
+        selectedProduct.images.length === 0
+    ) {
+        return;
+    }
+
+    modalImageIndex += direction;
+
+    if (modalImageIndex < 0) {
+
+        modalImageIndex =
+            selectedProduct.images.length - 1;
+    }
+
+    if (
+        modalImageIndex >=
+        selectedProduct.images.length
+    ) {
+
+        modalImageIndex = 0;
+    }
+
+    const modalImage =
+        document.getElementById(
+            'modalProductImage'
+        );
+
+    modalImage.src =
+        selectedProduct.images[
+            modalImageIndex
+        ];
+
+    modalImage.dataset.index =
+        modalImageIndex;
+}
+
+window.changeModalSlide =
+    changeModalSlide;
     // Populate variants
     const variantsList = document.getElementById('modalVariantsList');
     if (product.variants && product.variants.length > 0) {
-        // Debug: Log variant structure
-        console.log('Product variants:', product.variants);
         
         variantsList.innerHTML = product.variants.map(variant => {
-            // Debug: Log each variant
-            console.log('Variant:', variant);
-            console.log('Variant calculated_price:', variant.calculated_price);
             
             const price = getVariantPrice(variant);
             const priceText = price > 0 ? `₹${price}` : 'Price unavailable';
@@ -565,42 +766,76 @@ function addSelectedToCart() {
 // ====================
 
 // Medusa API configuration
-const MEDUSA_API_URL = 'http://localhost:9000';
+const MEDUSA_API_URL =
+    window.location.hostname === "localhost"
+        ? "http://localhost:9000"
+        : "https://your-production-api.com";
 const PUBLISHABLE_API_KEY = 'pk_14ad2a13987db9ab348a44f58d1c42a18414d926fc29a04eac76a438a4c57c6a';
 
 // Load auth state from localStorage
 function loadAuthState() {
-    const savedUser = localStorage.getItem('ayurLeafUser');
-    const savedToken = localStorage.getItem('ayurLeafAuthToken');
-    
-    if (savedUser && savedToken) {
+
+    const savedUser =
+        localStorage.getItem(
+            'divineYouUser'
+        );
+
+    if (savedUser) {
+
         try {
-            currentUser = JSON.parse(savedUser);
+
+            currentUser =
+                JSON.parse(savedUser);
+
             isLoggedIn = true;
-            console.log('Loaded auth state:', { user: currentUser, hasToken: !!savedToken });
+
         } catch (error) {
-            console.error('Error parsing saved user data:', error);
-            // Clear corrupted data
-            localStorage.removeItem('ayurLeafUser');
-            localStorage.removeItem('ayurLeafAuthToken');
+
+            console.error(
+                'Error parsing saved user data:',
+                error
+            );
+
+            localStorage.removeItem(
+                'divineYouUser'
+            );
+
+            isLoggedIn = false;
+
+            currentUser = null;
         }
+
+    } else {
+
+        isLoggedIn = false;
+
+        currentUser = null;
     }
 }
 
 // Save auth state to localStorage
-function saveAuthState(user, token) {
-    if (user && token) {
+function saveAuthState(user) {
+
+    if (user) {
+
         currentUser = user;
+
         isLoggedIn = true;
-        localStorage.setItem('ayurLeafUser', JSON.stringify(user));
-        localStorage.setItem("ayurLeafAuthToken","custom-auth-token");
-        localStorage.setItem('ayurLeafAuthToken', token);
-        console.log('Saved auth state:', { user: currentUser, hasToken: !!token });
+
+        localStorage.setItem(
+            'divineYouUser',
+            JSON.stringify(user)
+        );
+
     } else {
+
         currentUser = null;
+
         isLoggedIn = false;
-        localStorage.removeItem('ayurLeafUser');
-        localStorage.removeItem('ayurLeafAuthToken');
+
+        localStorage.removeItem(
+            'divineYouUser'
+        );
     }
 }
 
@@ -739,13 +974,13 @@ async function handleLogin(event) {
     event.preventDefault();
 
     const formData =
-    new FormData(event.target);
+        new FormData(event.target);
 
     const email =
-    formData.get("email");
+        formData.get("email");
 
     const password =
-    formData.get("password");
+        formData.get("password");
 
     if (!email || !password) {
 
@@ -758,42 +993,46 @@ async function handleLogin(event) {
     }
 
     const submitBtn =
-    event.target.querySelector(
-        'button[type="submit"]'
-    );
+        event.target.querySelector(
+            'button[type="submit"]'
+        );
 
     const originalText =
-    submitBtn.textContent;
+        submitBtn.textContent;
 
     submitBtn.textContent =
-    "Signing In...";
+        "Signing In...";
 
     submitBtn.disabled = true;
 
     try {
 
         const response =
-        await fetch(
-            "http://localhost:7000/api/users/login",
-            {
-                method: "POST",
+            await fetch(
+                "http://localhost:7000/api/users/login",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type":
-                    "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
 
-                body: JSON.stringify({
-                    email,
-                    password
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
 
         const data =
-        await response.json();
+            await response.json();
 
-        console.log(data);
+        window.loginResponse = data;
+
+console.log(
+    "LOGIN RESPONSE SAVED"
+);
 
         if (!response.ok) {
 
@@ -803,22 +1042,23 @@ async function handleLogin(event) {
             );
         }
 
-        const user = data.user;
-
+        const user =
+            data.user;
+localStorage.setItem(
+    "divineYouAuthToken",
+    data.token
+);
+        // SAVE USER
         localStorage.setItem(
-            "ayurLeafUser",
+            "divineYouUser",
             JSON.stringify(user)
-        );
-
-        localStorage.setItem(
-            "ayurLeafAuthToken",
-            "custom-auth-token"
         );
 
         currentUser = user;
 
         isLoggedIn = true;
 
+        // UPDATE UI
         updateProfileDropdown();
 
         loadCartFromStorage();
@@ -832,43 +1072,50 @@ async function handleLogin(event) {
             "success"
         );
 
+        // REDIRECT
         setTimeout(() => {
 
             if (
-                user.role === "admin"
+                user.role &&
+                user.role.toLowerCase() === "admin"
             ) {
 
                 window.location.href =
-                "./admin.html";
+                    "./admin.html";
 
             } else if (
-                user.role === "courier"
+                user.role &&
+                user.role.toLowerCase() === "courier"
             ) {
 
                 window.location.href =
-                "./courier.html";
+                    "./courier.html";
 
             } else {
 
                 window.location.href =
-                "./shop.html";
+                    "./shop.html";
             }
 
         }, 1000);
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error(
+            "LOGIN ERROR:",
+            error
+        );
 
         showNotification(
-            error.message,
+            error.message ||
+            "Login failed",
             "error"
         );
 
     } finally {
 
         submitBtn.textContent =
-        originalText;
+            originalText;
 
         submitBtn.disabled = false;
     }
@@ -940,8 +1187,8 @@ async function handleRegister(event) {
 
         const data =
         await response.json();
+        
 
-        console.log(data);
 
         if (!response.ok) {
 
@@ -976,13 +1223,12 @@ async function handleRegister(event) {
 }
 // Handle logout
 function handleLogout() {
-    console.log('Logging out user:', currentUser);
     
     // Get current token before clearing
-    const currentToken = localStorage.getItem('ayurLeafAuthToken');
+    const currentToken = localStorage.getItem('divineYouAuthToken');
     
     // Set logout flag to prevent cart persistence
-    sessionStorage.setItem('ayurLeafJustLoggedOut', 'true');
+    sessionStorage.setItem('divineYouJustLoggedOut', 'true');
     
     // Clear current user's cart completely
     clearCurrentUserCart();
@@ -996,14 +1242,6 @@ function handleLogout() {
                 'x-publishable-api-key': PUBLISHABLE_API_KEY,
                 'Authorization': `Bearer ${currentToken}`
             }
-        })
-        .then(response => {
-            console.log('Logout API response:', response.status);
-            // Don't throw error for logout - always clear local state
-        })
-        .catch(error => {
-            console.log('Logout API call failed (continuing with local logout):', error);
-            // Continue with local logout even if API call fails
         })
         .finally(() => {
             // Clear auth state regardless of API call result
@@ -1021,8 +1259,7 @@ function clearAuthState() {
     isLoggedIn = false;
     
     // Clear auth storage
-    localStorage.removeItem('ayurLeafUser');
-    localStorage.removeItem('ayurLeafAuthToken');
+    localStorage.removeItem('divineYouUser');
     
     updateProfileDropdown();
     
@@ -1126,30 +1363,60 @@ function showNotification(message, type = 'success') {
 
 // Checkout handler - opens address modal
 function handleCheckout() {
-    console.log('Checkout clicked, cart items:', cart.length);
-    
+
     // Check if cart is empty
     if (cart.length === 0) {
-        showNotification('Your cart is empty. Add items before checkout.', 'error');
+
+        showNotification(
+            'Your cart is empty. Add items before checkout.',
+            'error'
+        );
+
         return;
     }
-    
-    // Check if user is logged in
-    if (!isLoggedIn || !currentUser) {
-        showNotification('Please login to proceed with checkout.', 'error');
+
+    // ALWAYS REFRESH AUTH STATE
+    currentUser =
+    JSON.parse(
+        localStorage.getItem(
+            "divineYouUser"
+        )
+    ) || null;
+
+    const authToken =
+    localStorage.getItem(
+        "divineYouAuthToken"
+    );
+
+    // CHECK LOGIN
+    if (
+        !currentUser ||
+        !authToken
+    ) {
+
+        showNotification(
+            'Please login to proceed with checkout.',
+            'error'
+        );
+
         setTimeout(() => {
+
             openLoginModal();
+
         }, 1000);
+
         return;
     }
-    
+
+    // FORCE LOGIN STATE TRUE
+    isLoggedIn = true;
+
     // Open address modal
     openAddressModal();
 }
 
 // Open address modal
 function openAddressModal() {
-    console.log('Opening address modal for user:', currentUser?.id);
     const modal = document.getElementById('addressModal');
     if (modal) {
         modal.classList.add('active');
@@ -1335,10 +1602,6 @@ function createAddressCard(address) {
 // Select address
 function selectAddress(addressId) {
 
-    console.log(
-        "Selecting address:",
-        addressId
-    );
 
     selectedAddress =
     addresses.find(addr => {
@@ -1348,11 +1611,6 @@ function selectAddress(addressId) {
             String(addressId)
         );
     });
-
-    console.log(
-        "Selected Address:",
-        selectedAddress
-    );
 
     if (!selectedAddress) {
 
@@ -1386,12 +1644,9 @@ function selectAddress(addressId) {
 }
 // Edit address
 function editAddress(addressId) {
-    console.log('Editing address:', addressId);
     editingAddress = addresses.find(addr => addr.id === addressId);
     
-    if (editingAddress) {
-        console.log('Editing address data:', editingAddress);
-        
+    if (editingAddress) {       
         // Populate form
         document.getElementById('fullName').value = `${editingAddress.first_name} ${editingAddress.last_name || ''}`.trim();
         document.getElementById('phoneNumber').value = editingAddress.phone || '';
@@ -1455,11 +1710,8 @@ async function deleteAddress(addressId) {
 function handleAddressSubmit(event) {
     event.preventDefault();
     
-    console.log('Address form submitted');
-    
     // Validate form
     if (!validateAddressForm()) {
-        console.log('Form validation failed');
         return;
     }
     
@@ -1482,7 +1734,6 @@ function handleAddressSubmit(event) {
         delete addressData.metadata.landmark;
     }
     
-    console.log('Address data to save:', addressData);
     
     if (editingAddress) {
         // Update existing address
@@ -1723,9 +1974,7 @@ function displaySelectedAddress() {
 }
 
 // Confirm address selection
-function confirmAddressSelection() {
-    console.log('Address selection confirmed:', selectedAddress);
-    
+function confirmAddressSelection() {    
     if (!selectedAddress) {
         showNotification('Please select an address', 'error');
         return;
@@ -1733,10 +1982,9 @@ function confirmAddressSelection() {
     
     // Store selected address globally for persistence
     currentCheckoutAddress = selectedAddress;
-    console.log('Stored currentCheckoutAddress before modal transition:', currentCheckoutAddress);
     
     // Store selected address for future use
-    localStorage.setItem('ayurLeafSelectedAddress', JSON.stringify(selectedAddress));
+    localStorage.setItem('divineYouSelectedAddress', JSON.stringify(selectedAddress));
     
     // Close address modal and open checkout summary
     closeAddressModal();
@@ -1764,7 +2012,6 @@ globalThis.confirmAddressSelection = confirmAddressSelection;
 
 // Open checkout summary modal
 function openCheckoutSummaryModal() {
-    console.log('Opening checkout summary modal');
     
     // Prepare checkout state
     prepareCheckoutState();
@@ -1790,15 +2037,10 @@ function closeCheckoutSummaryModal() {
 
 // Prepare checkout state with current data
 function prepareCheckoutState() {
-    console.log('Preparing checkout state');
-    console.log('Selected address:', selectedAddress);
-    console.log('Current checkout address:', currentCheckoutAddress);
-    console.log('Cart items:', cart);
     
     // Set selected address - use global persistent address
     checkoutState.address = currentCheckoutAddress || selectedAddress;
     
-    console.log('Checkout address state:', checkoutState.address);
     
     // Set cart items
     checkoutState.items = [...cart];
@@ -1809,15 +2051,10 @@ function prepareCheckoutState() {
     // Calculate grand total (subtotal + shipping)
     checkoutState.grandTotal = checkoutState.subtotal + checkoutState.shipping;
     
-    console.log('Checkout state prepared:', checkoutState);
-    console.log('Subtotal:', checkoutState.subtotal);
-    console.log('Shipping:', checkoutState.shipping);
-    console.log('Grand Total:', checkoutState.grandTotal);
 }
 
 // Render checkout summary
 function renderCheckoutSummary() {
-    console.log('Rendering checkout summary');
     
     // Render delivery address
     renderDeliveryAddress();
@@ -1833,10 +2070,8 @@ function renderCheckoutSummary() {
 function renderDeliveryAddress() {
     const deliveryAddressCard = document.getElementById('deliveryAddressCard');
     
-    console.log('Rendering delivery address, checkoutState.address:', checkoutState.address);
     
     if (checkoutState.address) {
-        console.log('Rendering address details for:', checkoutState.address.first_name);
         deliveryAddressCard.innerHTML = `
             <div class="delivery-address-details">
                 <div class="delivery-address-line">
@@ -1851,7 +2086,6 @@ function renderDeliveryAddress() {
             </div>
         `;
     } else {
-        console.log('No address found in checkout state');
         deliveryAddressCard.innerHTML = '<p>No delivery address selected</p>';
     }
 }
@@ -1898,9 +2132,7 @@ function renderPriceDetails() {
 }
 
 // Change delivery address
-function changeDeliveryAddress() {
-    console.log('Changing delivery address');
-    
+function changeDeliveryAddress() {    
     // Close checkout summary modal
     closeCheckoutSummaryModal();
     
@@ -1912,7 +2144,6 @@ function changeDeliveryAddress() {
 
 // Back to address selection
 function backToAddressSelection() {
-    console.log('Back to address selection');
     
     // Close checkout summary modal
     closeCheckoutSummaryModal();
@@ -1924,10 +2155,7 @@ function backToAddressSelection() {
 }
 
 // Proceed to payment - REAL MEDUSA ORDER CREATION FLOW (Phase 3)
-function proceedToPayment() {
-    console.log('🚀 Starting REAL Medusa order creation flow');
-    console.log('Checkout state:', checkoutState);
-    
+function proceedToPayment() {    
     // Validate checkout state
     if (!checkoutState.address) {
         showNotification('Please select a delivery address', 'error');
@@ -1944,9 +2172,7 @@ function proceedToPayment() {
         showNotification('Please login to place order', 'error');
         return;
     }
-    
-    console.log('✅ All validations passed, starting order creation...');
-    
+
     // Show loading state
     const payButton = document.querySelector('.proceed-to-pay-btn');
     const originalText = payButton.textContent;
@@ -1956,7 +2182,6 @@ function proceedToPayment() {
     // Start the complete order creation flow
     createMedusaOrder()
         .then(orderResult => {
-            console.log('🎉 Order created successfully:', orderResult);
             handleOrderSuccess(orderResult);
         })
         .catch(error => {
@@ -1972,12 +2197,10 @@ function proceedToPayment() {
 
 // REAL MEDUSA ORDER CREATION FLOW
 async function createMedusaOrder() {
-    console.log('📋 STEP 1: Creating Medusa cart...');
     
     try {
         // STEP 1: Create Medusa cart with authenticated session
-        const token = localStorage.getItem('ayurLeafAuthToken');
-        console.log('Creating cart with auth token:', token ? 'Token exists' : 'No token');
+        const token = localStorage.getItem('divineYouAuthToken');
         
         const headers = {
             'Content-Type': 'application/json',
@@ -2003,46 +2226,25 @@ async function createMedusaOrder() {
         }
         
         const cartData = await cartResponse.json();
-        console.log('✅ Cart created successfully:', cartData);
         const medusaCart = cartData.cart;
-        
-        // Debug: Check if customer is already associated with cart
-        console.log('🔍 Checking cart state for customer association...');
-        console.log('Cart customer info after creation:', medusaCart.customer);
-        console.log('Cart email:', medusaCart.email);
-        console.log('Full cart object:', medusaCart);
-        
-        // STEP 2: Add all cart items to Medusa cart
-        console.log('📦 STEP 2: Adding items to cart...');
+    
         await addItemsToCart(medusaCart.id, checkoutState.items);
-        
-        // STEP 3: Attach authenticated customer to cart (if not already associated)
-        console.log('👤 STEP 3: Checking customer attachment...');
-        
-        // Check if customer is already associated before attempting attachment
-        if (medusaCart.customer && medusaCart.customer.id === currentUser.id) {
-            console.log('✅ Customer is already associated with cart, skipping attachment step');
-        } 
-        
-        // STEP 4: Attach shipping address
-        console.log('📍 STEP 4: Adding shipping address...');
+    
         await addShippingAddressToCart(medusaCart.id, checkoutState.address);
         
         // STEP 5: Add shipping method
-        console.log('🚚 STEP 5: Adding shipping method...');
         await addShippingMethodToCart(medusaCart.id);
         
         // STEP 6: Complete checkout with manual payment
-        console.log('💳 STEP 6: Completing checkout with manual payment...');
         const paymentResult = await completeCheckout(medusaCart.id);
+        console.log("PAYMENT RESULT:", paymentResult);
         
         // STEP 7: Return final order result
-        console.log('📄 STEP 7: Order creation completed');
         return {
-            order: paymentResult.order,
-            cartId: medusaCart.id,
-            totalAmount: checkoutState.grandTotal
-        };
+    order: paymentResult?.order || null,
+    cartId: medusaCart.id,
+    totalAmount: checkoutState.grandTotal
+};
         
     } catch (error) {
         console.error('❌ Error in order creation flow:', error);
@@ -2052,10 +2254,8 @@ async function createMedusaOrder() {
 
 // Add items to Medusa cart
 async function addItemsToCart(cartId, items) {
-    console.log(`Adding ${items.length} items to cart ${cartId}`);
     
     for (const item of items) {
-        console.log(`Adding item: ${item.name} (Variant: ${item.variantId}, Qty: ${item.quantity})`);
         
         const lineItemResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}/line-items`, {
             method: 'POST',
@@ -2076,18 +2276,13 @@ async function addItemsToCart(cartId, items) {
         }
         
         const lineItemData = await lineItemResponse.json();
-        console.log(`✅ Added item ${item.name}:`, lineItemData);
     }
-    
-    console.log('✅ All items added to cart successfully');
 }
 
 // Attach authenticated customer to cart
 
 // Add shipping address to cart
-async function addShippingAddressToCart(cartId, address) {
-    console.log(`Adding shipping address to cart ${cartId}:`, address);
-    
+async function addShippingAddressToCart(cartId, address) {    
     // Prepare shipping address payload for Medusa v2
     const addressPayload = {
         shipping_address: {
@@ -2103,8 +2298,7 @@ async function addShippingAddressToCart(cartId, address) {
             metadata: address.metadata || {}
         }
     };
-    
-    console.log('🔍 Shipping address payload:', JSON.stringify(addressPayload, null, 2));
+
     
     // Use correct Medusa v2 cart update endpoint
     const addressResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}`, {
@@ -2117,19 +2311,6 @@ async function addShippingAddressToCart(cartId, address) {
         body: JSON.stringify(addressPayload)
     });
     
-    console.log('📤 Shipping address update request:', {
-        url: `${MEDUSA_API_URL}/store/carts/${cartId}`,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-publishable-api-key': PUBLISHABLE_API_KEY
-        },
-        body: addressPayload
-    });
-    
-    console.log('Shipping address response status:', addressResponse.status);
-    console.log('Shipping address response headers:', Object.fromEntries(addressResponse.headers.entries()));
-    
     if (!addressResponse.ok) {
         const errorData = await addressResponse.json().catch(() => ({}));
         console.error('❌ Shipping address error response:', errorData);
@@ -2137,24 +2318,14 @@ async function addShippingAddressToCart(cartId, address) {
     }
     
     const addressData = await addressResponse.json();
-    console.log('✅ Shipping address added to cart successfully:', addressData);
-    console.log('Updated cart object:', addressData.cart);
-    
     return addressData.cart || addressData;
 }
 
 // Add shipping method to cart
 async function addShippingMethodToCart(cartId) {
-    console.log(`Adding shipping method to cart ${cartId}`);
-    
-    try {
-        // First, fetch available shipping options for the cart
-        // Try different possible Medusa v2 endpoints
-        console.log('🚚 Fetching available shipping options...');
-        
+    try {        
         // Try the standard Medusa v2 endpoint first
         let optionsUrl = `${MEDUSA_API_URL}/store/shipping-options?cart_id=${cartId}`;
-        console.log(`📤 Trying standard endpoint: ${optionsUrl}`);
         
         let optionsResponse = await fetch(optionsUrl, {
             method: 'GET',
@@ -2162,17 +2333,12 @@ async function addShippingMethodToCart(cartId) {
                 'x-publishable-api-key': PUBLISHABLE_API_KEY
             },
             credentials: 'include'
-        });
-        
-        console.log('📥 Standard endpoint response status:', optionsResponse.status);
-        
+        });       
         // If standard endpoint fails, try alternative v2 endpoint
         
         // If both fail, try cart-level shipping options
         if (!optionsResponse.ok) {
-            console.log('⚠️ Alternative endpoint failed, trying cart-level...');
             optionsUrl = `${MEDUSA_API_URL}/store/carts/${cartId}`;
-            console.log(`📤 Trying cart endpoint: ${optionsUrl}`);
             
             optionsResponse = await fetch(optionsUrl, {
                 method: 'GET',
@@ -2181,13 +2347,7 @@ async function addShippingMethodToCart(cartId) {
                 },
                 credentials: 'include'
             });
-            
-            console.log('📥 Cart endpoint response status:', optionsResponse.status);
         }
-        
-        console.log('📥 Shipping options response status:', optionsResponse.status);
-        console.log('📥 Shipping options response headers:', Object.fromEntries(optionsResponse.headers.entries()));
-        
         if (!optionsResponse.ok) {
             const errorData = await optionsResponse.json().catch(() => ({}));
             console.error('❌ Shipping options error response:', errorData);
@@ -2195,48 +2355,32 @@ async function addShippingMethodToCart(cartId) {
         }
         
         const optionsData = await optionsResponse.json();
-        console.log('📦 Available shipping options response:', optionsData);
-        console.log('📦 Response structure:', Object.keys(optionsData));
-        
         // Handle different response formats from different endpoints
         let shippingOptions = [];
         
         if (optionsData.shipping_options) {
             // Standard format
             shippingOptions = optionsData.shipping_options;
-            console.log('📋 Using standard shipping_options format');
         } else if (optionsData.cart?.shipping_options) {
             // Cart-level format
             shippingOptions = optionsData.cart.shipping_options;
-            console.log('📋 Using cart-level shipping_options format');
         } else if (Array.isArray(optionsData)) {
             // Direct array format
             shippingOptions = optionsData;
-            console.log('📋 Using direct array format');
         } else if (optionsData.data?.shipping_options) {
             // Data wrapper format
             shippingOptions = optionsData.data.shipping_options;
-            console.log('📋 Using data wrapper format');
         } else {
             console.warn('⚠️ Unknown shipping options response format');
-            console.log('Available keys in response:', Object.keys(optionsData));
             
             // Try to find any array in the response
             for (const key in optionsData) {
                 if (Array.isArray(optionsData[key])) {
                     shippingOptions = optionsData[key];
-                    console.log(`📋 Found array in key: ${key}`);
                     break;
                 }
             }
         }
-        
-        console.log(`📋 Found ${shippingOptions.length} shipping options:`, shippingOptions.map(opt => ({
-            id: opt.id,
-            name: opt.name,
-            price: opt.amount || opt.price,
-            type: opt.price_type || opt.type
-        })));
         
         if (shippingOptions.length === 0) {
             console.warn('⚠️ No shipping options found, checking if cart has shipping methods...');
@@ -2255,15 +2399,7 @@ async function addShippingMethodToCart(cartId) {
         // If no preferred option found, use the first available option
         if (!selectedOption) {
             selectedOption = shippingOptions[0];
-            console.log('⚠️ No preferred shipping option found, using first available');
         }
-        
-        console.log('✅ Selected shipping option:', {
-            id: selectedOption.id,
-            name: selectedOption.name,
-            price: selectedOption.amount,
-            type: selectedOption.price_type
-        });
         
         // Add the selected shipping method to cart
         const shippingResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}/shipping-methods`, {
@@ -2285,8 +2421,6 @@ async function addShippingMethodToCart(cartId) {
         }
         
         const shippingData = await shippingResponse.json();
-        console.log('✅ Shipping method added to cart successfully:', shippingData);
-        console.log('📦 Updated cart after shipping method:', shippingData.cart);
         
     } catch (error) {
         console.error('❌ Error adding shipping method:', error);
@@ -2297,135 +2431,180 @@ async function addShippingMethodToCart(cartId) {
 // Complete checkout with manual payment
 async function completeCheckout(cartId) {
 
-    console.log("Starting Razorpay payment...");
-
     try {
 
-        const options = {
+        return new Promise((resolve, reject) => {
 
-            key: "rzp_test_So7H4qKiXQch5g",
+            const options = {
 
-            amount: checkoutState.grandTotal * 100,
+                key: "rzp_test_So7H4qKiXQch5g",
 
-            currency: "INR",
+                amount: checkoutState.grandTotal * 100,
 
-            name: "Your Store",
+                currency: "INR",
 
-            description: "Order Payment",
+                name: "Divine You",
 
-            handler: async function (response) {
+                description: "Order Payment",
 
-                console.log("✅ Razorpay payment success:", response);
-                // SAVE ORDER TO POSTGRESQL DATABASE
+                handler: async function (response) {
 
-const backendOrderPayload = {
+                    try {
 
-    customer: {
-    name:
-    currentUser.firstName ||
-    currentUser.first_name ||
-    currentUser.name ||
-    "Customer",
+                        const backendOrderPayload = {
 
-    email:
-        currentUser.email || "",
+                            customer: {
 
-    phone:
-        checkoutState.address?.phone || "",
+                                name:
+                                    currentUser.firstName ||
+                                    currentUser.first_name ||
+                                    currentUser.name ||
+                                    "Customer",
 
-    address: `
+                                email:
+                                    currentUser.email || "",
+
+                                phone:
+                                    checkoutState.address?.phone || "",
+
+                                address: `
 ${checkoutState.address?.address_1 || ""}
 ${checkoutState.address?.city || ""}
 ${checkoutState.address?.province || ""}
 ${checkoutState.address?.postal_code || ""}
 `.trim()
-},
+                            },
 
-    items: checkoutState.items,
+                            items: checkoutState.items,
 
-    subtotal: checkoutState.subtotal,
+                            subtotal: checkoutState.subtotal,
 
-    shipping_charge: checkoutState.shipping,
+                            shipping_charge: checkoutState.shipping,
 
-    total_amount: checkoutState.grandTotal,
+                            total_amount: checkoutState.grandTotal,
 
-    payment_status: "paid",
+                            payment_status: "paid",
 
-    order_status: "pending",
+                            order_status: "pending",
 
-    razorpay_payment_id: response.razorpay_payment_id
-};
+                            razorpay_payment_id:
+                                response.razorpay_payment_id
+                        };
 
-console.log("Sending order to backend:", backendOrderPayload);
+                        const token =
+localStorage.getItem(
+    "divineYouAuthToken"
+);
 
-const backendResponse = await fetch(
+const backendResponse =
+await fetch(
     "http://localhost:7000/api/orders",
     {
         method: "POST",
 
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+            "application/json",
+
+            "Authorization":
+            `Bearer ${token}`
         },
 
-        body: JSON.stringify(backendOrderPayload)
+        body: JSON.stringify(
+            backendOrderPayload
+        )
     }
 );
 
-const backendData = await backendResponse.json();
+                        const backendData =
+                            await backendResponse.json();
 
-console.log("Backend order response:", backendData);
+                        if (!backendResponse.ok) {
 
-if (!backendResponse.ok) {
-    throw new Error("Failed to save order in database");
-}
+                            throw new Error(
+                                backendData.message ||
+                                "Failed to save order"
+                            );
+                        }
 
-console.log("✅ Order saved in PostgreSQL");
+                        console.log(
+                            "Backend Order Saved:",
+                            backendData
+                        );
 
-                try {
+                        // CLEAR CART
 
-    console.log("✅ PostgreSQL order completed");
+                        cart = [];
 
-    // CLEAR CART
-    cart = [];
+                        updateCartUI();
 
-    updateCartUI();
+                        localStorage.removeItem(
+                            `divineYouCart_${currentUser.id}`
+                        );
 
-    localStorage.removeItem(
-        `ayurLeafCart_${currentUser.id}`
-    );
+                        // IMPORTANT RETURN
 
-    // SUCCESS MESSAGE
-    alert(
-        "Order placed successfully!"
-    );
+                        resolve({
+                            order: backendData.order || backendData,
+                            paymentId:
+                                response.razorpay_payment_id
+                        });
 
-    // REDIRECT
-    window.location.href =
-        "./orderHistory.html";
+                        // REDIRECT
 
-} catch (err) {
+                        setTimeout(() => {
 
-    console.error(
-        "Checkout cleanup failed:",
-        err
-    );
-}
-            },
+                            window.location.href =
+                                "./orderHistory.html";
 
-            prefill: {
-                name: currentUser?.first_name || "Customer",
-                email: currentUser?.email || "",
-                contact: checkoutState.address?.phone || ""
-            },
+                        }, 1000);
 
-            theme: {
-                color: "#5e6f52"
-            }
-        };
+                    } catch (err) {
 
-        const rzp = new Razorpay(options);
+                        console.error(
+                            "Payment handler error:",
+                            err
+                        );
 
-        rzp.open();
+                        reject(err);
+                    }
+                },
+
+                prefill: {
+
+                    name:
+                        currentUser?.first_name ||
+                        currentUser?.firstName ||
+                        "Customer",
+
+                    email:
+                        currentUser?.email || "",
+
+                    contact:
+                        checkoutState.address?.phone || ""
+                },
+
+                theme: {
+                    color: "#5e6f52"
+                },
+
+                modal: {
+
+                    ondismiss: function () {
+
+                        reject(
+                            new Error(
+                                "Payment popup closed by user"
+                            )
+                        );
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+
+            rzp.open();
+        });
 
     } catch (error) {
 
@@ -2438,13 +2617,13 @@ console.log("✅ Order saved in PostgreSQL");
             "Payment failed",
             "error"
         );
+
+        throw error;
     }
 }
 
 // Handle successful order creation
 function handleOrderSuccess(orderResult) {
-    console.log('🎉 Handling successful order:', orderResult);
-    
     const order = orderResult.order;
     const orderNumber = order.display_id || order.id;
     const totalAmount = orderResult.totalAmount;
@@ -2469,14 +2648,11 @@ function handleOrderSuccess(orderResult) {
     
     // Show success modal with order details
     showOrderSuccessModal(orderNumber, totalAmount);
-    
-    // Show notification
-    showNotification(`Order #${orderNumber} placed successfully!`, 'success');
+
 }
 
 // Show order success modal
 function showOrderSuccessModal(orderNumber, totalAmount) {
-    console.log(`Showing success modal for order #${orderNumber}`);
     
     // Create success modal if it doesn't exist
     let successModal = document.getElementById('orderSuccessModal');
@@ -2691,7 +2867,6 @@ function closeOrderSuccessModal() {
 
 // Continue shopping after successful order
 function continueShopping() {
-    console.log('Continuing shopping after order success');
     closeOrderSuccessModal();
     // Redirect to shop page
     window.location.href = 'shop.html';

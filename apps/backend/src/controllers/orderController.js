@@ -116,13 +116,13 @@ const createOrder = async (req,res) => {
             VALUES($1,$2,$3,$4,$5,$6)
             `,
             [
-                orderData.id,
-                "Order Placed",
-                "Your order has been placed successfully",
-                "Warehouse",
-                null,
-                null
-            ]
+    orderData.id,
+    "Order Placed",
+    "Order has been placed successfully",
+    "Warehouse",
+    null,
+    null
+]
         );
 
         for(const item of items){
@@ -384,17 +384,17 @@ const updateCourier = async (req,res) => {
     }
 };
 
-// SAVE TRACKING DETAILS
-const updateShipmentDetails = async (req,res)=>{
+const updateShipmentDetails = async (req, res) => {
 
-    try{
+    try {
 
         const { orderId } =
             req.params;
 
         const {
             tracking_id,
-            courier_name
+            courier_name,
+            tracking_status
         } = req.body;
 
         const shipmentId =
@@ -408,25 +408,26 @@ const updateShipmentDetails = async (req,res)=>{
                 tracking_id = $1,
                 courier_name = $2,
                 shipment_id = $3,
-                order_status = 'shipped',
+                order_status = $4,
                 updated_at = NOW()
-            WHERE order_id = $4
+            WHERE id = $5
             RETURNING *
             `,
             [
                 tracking_id,
                 courier_name,
                 shipmentId,
+                tracking_status,
                 orderId
             ]
         );
 
         res.json({
-            success:true,
-            order:result.rows[0]
+            success: true,
+            order: result.rows[0]
         });
 
-    }catch(error){
+    } catch (error) {
 
         console.error(
             "SHIPMENT UPDATE ERROR:",
@@ -434,8 +435,8 @@ const updateShipmentDetails = async (req,res)=>{
         );
 
         res.status(500).json({
-            success:false,
-            message:"Shipment update failed"
+            success: false,
+            message: "Shipment update failed"
         });
     }
 };

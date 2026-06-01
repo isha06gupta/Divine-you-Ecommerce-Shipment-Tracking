@@ -60,8 +60,8 @@ body {
 }
 
 .logo {
-    height: 40px;
-    width: 40px;
+    height: 80px;
+    width: 80px;
     border-radius: 8px;
     object-fit: cover;
 }
@@ -1401,4 +1401,43 @@ body {
 
 .save-manual-btn:hover{
     background:#40916c;
+}
+.shipments-table .manual-input{
+    min-width:180px;
+}
+
+.shipments-table .status-select{
+    min-width:140px;
+}
+
+.shipments-table .save-manual-btn{
+    padding:10px 16px;
+    border-radius:10px;
+}
+.shipments-table .manual-input{
+
+    width:100%;
+
+    min-width:180px;
+
+    padding:12px 14px;
+
+    border:1px solid var(--border-light);
+
+    border-radius:12px;
+
+    background:white;
+
+    font-size:14px;
+
+    outline:none;
+
+    transition:0.3s;
+}
+
+.shipments-table .manual-input:focus{
+
+    border-color:var(--primary-olive);
+
+    box-shadow:0 0 0 3px rgba(85,107,47,0.12);
 }

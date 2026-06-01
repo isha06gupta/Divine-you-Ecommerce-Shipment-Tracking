@@ -1,4 +1,4 @@
-
+const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { query } = require("../db/db");
 
@@ -133,12 +133,11 @@ const loginUser = async (req, res) => {
 
         const user = result.rows[0];
 
-        // PASSWORD CHECK
         const isPasswordValid =
-            await bcrypt.compare(
-                password,
-                user.password
-            );
+        await bcrypt.compare(
+            password,
+            user.password
+        );
 
         if (!isPasswordValid) {
 
@@ -148,20 +147,54 @@ const loginUser = async (req, res) => {
             });
         }
 
+        // JWT TOKEN
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "7d"
+            }
+        );
+
         res.json({
-    success: true,
-    user: {
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address,
-        company_name: user.company_name,
-        profile_photo: user.profile_photo
-    }
-});
+
+            success: true,
+
+            token,
+
+            user: {
+
+                id: user.id,
+
+                first_name:
+                    user.first_name,
+
+                last_name:
+                    user.last_name,
+
+                email:
+                    user.email,
+
+                role:
+                    user.role,
+
+                phone:
+                    user.phone,
+
+                address:
+                    user.address,
+
+                company_name:
+                    user.company_name,
+
+                profile_photo:
+                    user.profile_photo
+            }
+        });
 
     } catch (error) {
 
@@ -171,12 +204,14 @@ const loginUser = async (req, res) => {
         );
 
         res.status(500).json({
+
             success: false,
-            message: "Login failed"
+
+            message:
+                "Login failed"
         });
     }
 };
-
 // GET ALL COURIERS
 const getAllCouriers = async (req, res) => {
 

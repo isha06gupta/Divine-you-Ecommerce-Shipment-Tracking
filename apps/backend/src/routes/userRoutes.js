@@ -13,6 +13,11 @@ const {
     upload
 } = require("../controllers/userController");
 
+const {
+    verifyToken,
+    requireAdmin
+} = require("../middlewares/authMiddleware");
+
 // REGISTER
 router.post(
     "/register",
@@ -28,18 +33,22 @@ router.post(
 // GET ALL COURIERS
 router.get(
     "/couriers",
+    verifyToken,
+    requireAdmin,
     getAllCouriers
 );
 
 // UPDATE CUSTOMER PROFILE
 router.put(
     "/:id",
+    verifyToken,
     updateCustomer
 );
 
 // PROFILE PHOTO
 router.post(
     "/:id/photo",
+    verifyToken,
     upload.single("photo"),
     uploadProfilePhoto
 );
@@ -47,12 +56,14 @@ router.post(
 // CHANGE PASSWORD
 router.put(
     "/:id/password",
+    verifyToken,
     changePassword
 );
 
 // USER STATS
 router.get(
     "/:id/stats",
+    verifyToken,
     getUserStats
 );
 

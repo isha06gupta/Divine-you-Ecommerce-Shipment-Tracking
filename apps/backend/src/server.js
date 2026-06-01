@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const cors = require("cors");
@@ -17,7 +19,15 @@ const addressRoutes =require("./routes/addressRoutes");
 
 const path = require("path");
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "http://localhost:3000",
+        "http://localhost:7000"
+    ],
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(

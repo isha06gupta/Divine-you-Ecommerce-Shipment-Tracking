@@ -1,5 +1,9 @@
 // Order History Management
 let currentUser = null;
+const token =
+localStorage.getItem(
+    "divineYouAuthToken"
+);
 let allOrders = [];
 let filteredOrders = [];
 
@@ -76,17 +80,18 @@ function setupProfileDropdown() {
 // Load orders from localStorage
 async function loadOrders() {
 
-    console.log("📦 Loading orders from database...");
-
     try {
 
         const response = await fetch(
-            "http://localhost:7000/api/orders"
-        );
+    "http://localhost:7000/api/orders",
+    {
+        headers:{
+            "Authorization": `Bearer ${token}`
+        }
+    }
+);
 
         const data = await response.json();
-
-        console.log("Fetched Orders:", data);
 
         if (data.success) {
 
@@ -140,8 +145,6 @@ trackingId: order.tracking_id,
             allOrders = [];
         }
 
-        console.log("All Orders:", allOrders);
-
         filterUserOrders();
 
         renderOrders();
@@ -159,10 +162,6 @@ trackingId: order.tracking_id,
 }
 // Filter orders for current user
 function filterUserOrders() {
-
-    console.log('Current User:', currentUser);
-
-    console.log('All Orders:', allOrders);
 
     if (!currentUser) {
 
@@ -187,12 +186,7 @@ function filterUserOrders() {
         return dateB - dateA;
     });
 
-    
-    console.log(
-    "FIRST FILTERED ORDER:",
-    filteredOrders[0]
-);
-}
+    }
 // Render orders to the page
 function renderOrders(ordersToRender = filteredOrders) {
     if (ordersToRender.length === 0) {
@@ -298,18 +292,42 @@ function createOrderCard(order) {
 
                 <div class="order-details">
 
-                    <div class="order-total">
-                        ${totalAmount}
-                    </div>
+    <div class="order-total">
+        ${totalAmount}
+    </div>
 
-                    <div class="shipping-info">
+    <div class="shipping-info">
+        ${itemCount}
+        item${itemCount !== 1 ? 's' : ''}
+    </div>
 
-                        ${itemCount}
-                        item${itemCount !== 1 ? 's' : ''}
+    ${
+        order.courierName
+        ?
+        `
+        <div class="courier-info">
+            <strong>Courier:</strong>
+            ${order.courierName}
+        </div>
+        `
+        :
+        ""
+    }
 
-                    </div>
+    ${
+        order.trackingId
+        ?
+        `
+        <div class="tracking-info">
+            <strong>Tracking:</strong>
+            ${order.trackingId}
+        </div>
+        `
+        :
+        ""
+    }
 
-                </div>
+</div>
 
             </div>
 
@@ -370,10 +388,7 @@ function createOrderCard(order) {
     <i class="fas fa-redo"></i>
     Buy Again
 </button>
-
-S
-
-            </div>
+           </div>
 
         </div>
     `;

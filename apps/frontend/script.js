@@ -135,7 +135,7 @@ function loadAuthState() {
         try {
             currentUser = JSON.parse(savedUser);
             isLoggedIn = true;
-            console.log('Loaded auth state:', { user: currentUser, hasToken: !!savedToken });
+            
         } catch (error) {
             console.error('Error parsing saved user data:', error);
             // Clear corrupted data
@@ -152,7 +152,6 @@ function saveAuthState(user, token) {
         isLoggedIn = true;
         localStorage.setItem('divineYouUser', JSON.stringify(user));
         localStorage.setItem('divineYouAuthToken', token);
-        console.log('Saved auth state:', { user: currentUser, hasToken: !!token });
     } else {
         currentUser = null;
         isLoggedIn = false;
@@ -328,7 +327,6 @@ async function handleLogin(event) {
         const data =
             await response.json();
 
-        console.log(data);
 
         if (!response.ok) {
 
@@ -345,7 +343,7 @@ async function handleLogin(event) {
         );
         localStorage.setItem(
     "divineYouAuthToken",
-    "custom-auth-token"
+    data.token
 );
 
         currentUser = user;
@@ -445,8 +443,6 @@ async function handleRegister(event) {
         const data =
             await response.json();
 
-        console.log(data);
-
         if (!response.ok) {
 
             throw new Error(
@@ -475,7 +471,6 @@ async function handleRegister(event) {
 }
 // Handle logout
 function handleLogout() {
-    console.log('Logging out user:', currentUser);
     
     // Get current token before clearing
     const currentToken = localStorage.getItem('divineYouAuthToken');
@@ -497,11 +492,9 @@ function handleLogout() {
             }
         })
         .then(response => {
-            console.log('Logout API response:', response.status);
             // Don't throw error for logout - always clear local state
         })
         .catch(error => {
-            console.log('Logout API call failed (continuing with local logout):', error);
             // Continue with local logout even if API call fails
         })
         .finally(() => {

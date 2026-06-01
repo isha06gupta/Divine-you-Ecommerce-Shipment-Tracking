@@ -88,12 +88,12 @@ header {
     z-index: 10;
 }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 5px 0;
+.navbar-container{
+    display:flex;
+    align-items:center;
+    width:100%;
+    padding:5px 0;
+    gap:40px;
 }
 .navbar-left{
     display:flex;
@@ -103,18 +103,16 @@ header {
 
 .navbar-center{
     display:flex;
-    justify-content:center;
+    align-items:center;
     flex:1;
-    min-width:0;
 }
-
 .navbar-right{
     display:flex;
     align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
+    gap:12px;
+    margin-left:auto;
+    position:relative;
 }
-
 .header-logo{
     display:flex;
     align-items:center;
@@ -154,9 +152,9 @@ header {
 nav{
     display:flex;
     align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:center;
+    justify-content:space-evenly;
+    width:100%;
+    max-width:520px;
 }
 
 /* Search Bar */
@@ -169,10 +167,20 @@ nav{
     border-radius:25px;
     padding:8px 15px;
     transition:all 0.3s ease;
-    min-width:200px;
+    width:260px;
+    min-width:180px;
     max-width:260px;
-    width:100%;
     cursor:pointer;
+    flex-shrink:1;
+}
+.navbar-right{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:12px;
+    flex-wrap:nowrap;
+    position:relative;
 }
 
 .search-bar:focus-within{
@@ -233,7 +241,7 @@ nav{
 }
 
 .nav-items{
-    font-size:18px;
+    font-size:23px;
     font-weight:600;
     letter-spacing:0.5px;
     text-transform:capitalize;
@@ -362,11 +370,11 @@ nav{
     }
 
     .search-bar{
-        padding:7px 12px;
+        padding:2px 7px;
     }
 
     .search-input{
-        font-size:13px;
+        font-size:20px;
     }
 
     .profile-btn{
@@ -415,7 +423,7 @@ nav .active{
         display:flex;
         justify-content:center;
         gap:12px;
-        flex-wrap:wrap;
+        flex-wrap:nowrap;
     }
 
     .navbar-center{
@@ -454,7 +462,6 @@ nav .active{
         width:100%;
         max-width:260px;
         min-width:unset;
-        padding:7px 12px;
     }
 
     .profile-btn{
@@ -510,7 +517,7 @@ nav .active{
     }
 
     .search-input{
-        font-size:12px;
+        font-size:19px;
     }
 
     .profile-btn{
