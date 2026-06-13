@@ -13,24 +13,13 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build",
-    "start": "medusa start",
-    "dev": "medusa develop",
+    "start": "node src/server.js",
+  "dev": "node src/server.js",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
-    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
-    "setup:checkout": "medusa exec ./scripts/create-shipping.js"
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
   },
   "dependencies": {
-    "@medusajs/admin-sdk": "2.14.2",
-    "@medusajs/admin-shared": "2.14.2",
-    "@medusajs/caching": "2.14.2",
-    "@medusajs/cli": "2.14.2",
-    "@medusajs/dashboard": "2.14.2",
-    "@medusajs/draft-order": "2.14.2",
-    "@medusajs/framework": "2.14.2",
-    "@medusajs/medusa": "2.14.2",
-    "@medusajs/ui": "4.1.9",
     "@tanstack/react-query": "5.64.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -44,7 +33,6 @@
     "zod": "4.2.0"
   },
   "devDependencies": {
-    "@medusajs/test-utils": "2.14.2",
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
@@ -52,6 +40,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "jest": "^29.7.0",
+    "nodemon": "^3.1.14",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

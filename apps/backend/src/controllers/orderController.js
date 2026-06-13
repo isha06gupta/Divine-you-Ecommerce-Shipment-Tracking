@@ -399,33 +399,53 @@ const updateShipmentDetails = async (req, res) => {
 
         const shipmentId =
             "SHIP-" + Date.now();
-
-        const result =
-        await query(
-            `
-            UPDATE orders
-            SET
-                tracking_id = $1,
-                courier_name = $2,
-                shipment_id = $3,
-                order_status = $4,
-                updated_at = NOW()
-            WHERE id = $5
-            RETURNING *
-            `,
-            [
-                tracking_id,
-                courier_name,
-                shipmentId,
-                tracking_status,
-                orderId
-            ]
-        );
-
-        res.json({
-            success: true,
-            order: result.rows[0]
-        });
+const result =
+await query(
+    `
+    UPDATE orders
+    SET
+        tracking_id = $1,
+        courier_name = $2,
+        shipment_id = $3,
+        order_status = $4,
+        updated_at = NOW()
+    WHERE id = $5
+    RETURNING *
+    `,
+    [
+        tracking_id,
+        courier_name,
+        shipmentId,
+        tracking_status,
+        orderId
+    ]
+);
+await query(
+    `
+    INSERT INTO shipment_tracking(
+        order_id,
+        shipment_id,
+        tracking_status,
+        tracking_message,
+        location,
+        courier_name,
+        created_at
+    )
+    VALUES($1,$2,$3,$4,$5,$6,NOW())
+    `,
+    [
+        orderId,
+        shipmentId,
+        tracking_status,
+        `Shipment updated to ${tracking_status}`,
+        "Transit Hub",
+        courier_name
+    ]
+);
+res.json({
+    success: true,
+    order: result.rows[0]
+});
 
     } catch (error) {
 

@@ -93,15 +93,9 @@ function togglePassword(inputId, toggleBtn) {
     }
 }
 
-// ====================
 // AUTHENTICATION FUNCTIONS
-// ====================
-
-// Medusa API configuration
-const MEDUSA_API_URL = 'http://localhost:9000';
-const PUBLISHABLE_API_KEY = 'pk_b2efd7f24ed19b2bad9b653386611f37d7bbe788288ab8cd4f27cc199cf64acb';
-
 // Auth state
+
 let currentUser = null;
 let isLoggedIn = false;
 
@@ -471,40 +465,15 @@ async function handleRegister(event) {
 }
 // Handle logout
 function handleLogout() {
-    
-    // Get current token before clearing
-    const currentToken = localStorage.getItem('divineYouAuthToken');
-    
-    // Set logout flag to prevent cart persistence
-    sessionStorage.setItem('divineYouJustLoggedOut', 'true');
-    
-    // Clear current user's cart completely
+
+    sessionStorage.setItem(
+        'divineYouJustLoggedOut',
+        'true'
+    );
+
     clearCurrentUserCart();
-    
-    // If we have a token, try to call logout API (optional but good practice)
-    if (currentToken && currentUser) {
-        fetch(`${MEDUSA_API_URL}/auth/customer`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-publishable-api-key': PUBLISHABLE_API_KEY,
-                'Authorization': `Bearer ${currentToken}`
-            }
-        })
-        .then(response => {
-            // Don't throw error for logout - always clear local state
-        })
-        .catch(error => {
-            // Continue with local logout even if API call fails
-        })
-        .finally(() => {
-            // Clear auth state regardless of API call result
-            clearAuthState();
-        });
-    } else {
-        // No token, just clear local state
-        clearAuthState();
-    }
+
+    clearAuthState();
 }
 
 // Clear auth state and update UI

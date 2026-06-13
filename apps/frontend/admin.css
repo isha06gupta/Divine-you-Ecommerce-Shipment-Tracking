@@ -1026,36 +1026,3 @@ body {
 
     border-color: #556B2F;
 }
-.medusa-btn {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    background: #111827;
-
-    color: white;
-
-    border: none;
-
-    padding: 10px 16px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    transition: 0.25s;
-}
-
-.medusa-btn:hover {
-
-    background: #000;
-
-    transform: translateY(-1px);
-}

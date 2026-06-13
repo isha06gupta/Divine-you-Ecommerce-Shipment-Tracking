@@ -86,22 +86,13 @@ function fetchProducts() {
     productGrid.innerHTML =
         '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Loading Products...</div>';
 
-    fetch(
-        `${MEDUSA_API_URL}/store/products?region_id=reg_01KRGDTG4A76Z2Z0R2V8RBHRV2`,
-        {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-publishable-api-key': PUBLISHABLE_API_KEY
-            }
-        }
-    )
+    fetch("http://localhost:7000/api/products")
+
     .then(response => {
 
         if (!response.ok) {
             throw new Error(
-                `Failed to load products: ${response.status} ${response.statusText}`
+                `Failed to load products: ${response.status}`
             );
         }
 
@@ -116,33 +107,29 @@ function fetchProducts() {
 
             name: product.title,
 
-            subtitle: product.subtitle || '',
+            subtitle: product.subtitle || "",
 
             images:
-    product.images && product.images.length > 0
-        ? product.images.map(img => img.url)
-        : [
-            product.thumbnail ||
-            'https://via.placeholder.com/300x200?text=No+Image'
-        ],
+                product.images && product.images.length > 0
+                    ? product.images.map(img => img.image_url)
+                    : [
+                        "https://via.placeholder.com/300x200?text=Product"
+                    ],
 
-image:
-    product.thumbnail ||
-    (
-        product.images &&
-        product.images[0] &&
-        product.images[0].url
-    ) ||
-    'https://via.placeholder.com/300x200?text=No+Image',
+            image:
+                product.images &&
+                product.images.length > 0
+                    ? product.images[0].image_url
+                    : "https://via.placeholder.com/300x200?text=Product",
 
-            description: product.description || '',
+            description: product.description || "",
 
             variants: product.variants || [],
 
             currentPrice:
-                getVariantPrice(product.variants?.[0]) || 0,
+                Number(product.variants?.[0]?.price || 0),
 
-            oldPrice: '',
+            oldPrice: "",
 
             rating: 5,
 
@@ -150,7 +137,7 @@ image:
                 [128, 342, 517, 289, 196, 423, 267, 389][index % 8],
 
             weight:
-                product.variants?.[0]?.title || ''
+                product.variants?.[0]?.title || ""
 
         }));
 
@@ -160,14 +147,12 @@ image:
 
     .catch(error => {
 
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
 
         productGrid.innerHTML =
-            '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #666;">Failed to load products</div>';
-
+            '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Failed to load products</div>';
     });
 }
-
 // Render products to the grid
 function renderProducts(products) {
     productGrid.innerHTML = products.map(product => createProductCard(product)).join('');
@@ -291,7 +276,7 @@ function changeSlide(productId, direction) {
 
     const product =
         products.find(
-            p => p.id === productId
+             p => String(p.id) === String(productId)
         );
 
     if (
@@ -542,26 +527,33 @@ globalThis.showForgotPassword = showForgotPassword;
 
 // Helper function to extract variant price consistently
 function getVariantPrice(variant) {
+
     if (!variant) return 0;
-    
-        let price = 0;
-    
-    // Priority 1: calculated_price.calculated_amount (Medusa v2)
+
+    // PostgreSQL format
+    if (variant.price) {
+        return Number(variant.price);
+    }
+
+    // Medusa v2
     if (variant.calculated_price?.calculated_amount) {
-        price = variant.calculated_price.calculated_amount / 100;
+        return variant.calculated_price.calculated_amount / 100;
     }
-    // Priority 2: prices array (fallback)
-    else if (variant.prices?.[0]?.amount) {
-        price = variant.prices[0].amount / 100;
+
+    // Medusa fallback
+    if (variant.prices?.[0]?.amount) {
+        return variant.prices[0].amount / 100;
     }
-    
-    return price;
+
+    return 0;
 }
 
 // Modal functions
 function openProductModal(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+
+const product = products.find(
+    p => String(p.id) === String(productId)
+);    if (!product) return;
 
     selectedProduct = product;
     selectedVariant = null;
@@ -676,7 +668,7 @@ function closeProductModal() {
 function selectVariant(variantId) {
     if (!selectedProduct) return;
 
-    selectedVariant = selectedProduct.variants.find(v => v.id === variantId);
+    selectedVariant = selectedProduct.variants.find( v => String(v.id) === String(variantId));
     
     // Update visual selection
     document.querySelectorAll('.variant-option').forEach(option => {
@@ -761,17 +753,7 @@ function addSelectedToCart() {
     }, 1500);
 }
 
-// ====================
 // AUTHENTICATION FUNCTIONS
-// ====================
-
-// Medusa API configuration
-const MEDUSA_API_URL =
-    window.location.hostname === "localhost"
-        ? "http://localhost:9000"
-        : "https://your-production-api.com";
-const PUBLISHABLE_API_KEY = 'pk_14ad2a13987db9ab348a44f58d1c42a18414d926fc29a04eac76a438a4c57c6a';
-
 // Load auth state from localStorage
 function loadAuthState() {
 
@@ -1030,10 +1012,6 @@ async function handleLogin(event) {
 
         window.loginResponse = data;
 
-console.log(
-    "LOGIN RESPONSE SAVED"
-);
-
         if (!response.ok) {
 
             throw new Error(
@@ -1221,38 +1199,18 @@ async function handleRegister(event) {
         );
     }
 }
-// Handle logout
-function handleLogout() {
-    
-    // Get current token before clearing
-    const currentToken = localStorage.getItem('divineYouAuthToken');
-    
-    // Set logout flag to prevent cart persistence
-    sessionStorage.setItem('divineYouJustLoggedOut', 'true');
-    
-    // Clear current user's cart completely
-    clearCurrentUserCart();
-    
-    // If we have a token, try to call logout API (optional but good practice)
-    if (currentToken && currentUser) {
-        fetch(`${MEDUSA_API_URL}/auth/customer`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-publishable-api-key': PUBLISHABLE_API_KEY,
-                'Authorization': `Bearer ${currentToken}`
-            }
-        })
-        .finally(() => {
-            // Clear auth state regardless of API call result
-            clearAuthState();
-        });
-    } else {
-        // No token, just clear local state
-        clearAuthState();
-    }
-}
 
+function handleLogout() {
+
+    sessionStorage.setItem(
+        "divineYouJustLoggedOut",
+        "true"
+    );
+
+    clearCurrentUserCart();
+
+    clearAuthState();
+}
 // Clear auth state and update UI
 function clearAuthState() {
     currentUser = null;
@@ -2180,10 +2138,10 @@ function proceedToPayment() {
     payButton.disabled = true;
     
     // Start the complete order creation flow
-    createMedusaOrder()
-        .then(orderResult => {
-            handleOrderSuccess(orderResult);
-        })
+    completeCheckout()
+    .then(orderResult => {
+        handleOrderSuccess(orderResult);
+    })
         .catch(error => {
             console.error('❌ Order creation failed:', error);
             showNotification(error.message || 'Failed to create order. Please try again.', 'error');
@@ -2195,241 +2153,8 @@ function proceedToPayment() {
         });
 }
 
-// REAL MEDUSA ORDER CREATION FLOW
-async function createMedusaOrder() {
-    
-    try {
-        // STEP 1: Create Medusa cart with authenticated session
-        const token = localStorage.getItem('divineYouAuthToken');
-        
-        const headers = {
-            'Content-Type': 'application/json',
-            'x-publishable-api-key': PUBLISHABLE_API_KEY
-        };
-        
-        // Add authorization header if token exists for automatic customer association
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-        
-        const cartResponse = await fetch(`${MEDUSA_API_URL}/store/carts`, {
-            method: 'POST',
-            headers: headers,
-            credentials: 'include',
-            body: JSON.stringify({
-                region_id: 'reg_01KRGDTG4A76Z2Z0R2V8RBHRV2' // Same region as products
-            })
-        });
-        
-        if (!cartResponse.ok) {
-            throw new Error(`Failed to create cart: ${cartResponse.status} ${cartResponse.statusText}`);
-        }
-        
-        const cartData = await cartResponse.json();
-        const medusaCart = cartData.cart;
-    
-        await addItemsToCart(medusaCart.id, checkoutState.items);
-    
-        await addShippingAddressToCart(medusaCart.id, checkoutState.address);
-        
-        // STEP 5: Add shipping method
-        await addShippingMethodToCart(medusaCart.id);
-        
-        // STEP 6: Complete checkout with manual payment
-        const paymentResult = await completeCheckout(medusaCart.id);
-        console.log("PAYMENT RESULT:", paymentResult);
-        
-        // STEP 7: Return final order result
-        return {
-    order: paymentResult?.order || null,
-    cartId: medusaCart.id,
-    totalAmount: checkoutState.grandTotal
-};
-        
-    } catch (error) {
-        console.error('❌ Error in order creation flow:', error);
-        throw error;
-    }
-}
-
-// Add items to Medusa cart
-async function addItemsToCart(cartId, items) {
-    
-    for (const item of items) {
-        
-        const lineItemResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}/line-items`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-publishable-api-key': PUBLISHABLE_API_KEY
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                variant_id: item.variantId,
-                quantity: item.quantity
-            })
-        });
-        
-        if (!lineItemResponse.ok) {
-            const errorData = await lineItemResponse.json().catch(() => ({}));
-            throw new Error(`Failed to add item ${item.name}: ${lineItemResponse.status} ${lineItemResponse.statusText}. ${errorData.message || ''}`);
-        }
-        
-        const lineItemData = await lineItemResponse.json();
-    }
-}
-
-// Attach authenticated customer to cart
-
-// Add shipping address to cart
-async function addShippingAddressToCart(cartId, address) {    
-    // Prepare shipping address payload for Medusa v2
-    const addressPayload = {
-        shipping_address: {
-            first_name: address.first_name,
-            last_name: address.last_name || '',
-            address_1: address.address_1,
-            address_2: address.address_2 || '',
-            city: address.city,
-            province: address.province,
-            postal_code: address.postal_code,
-            phone: address.phone,
-            country_code: 'in', // Default to India (lowercase ISO format for Medusa)
-            metadata: address.metadata || {}
-        }
-    };
-
-    
-    // Use correct Medusa v2 cart update endpoint
-    const addressResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-publishable-api-key': PUBLISHABLE_API_KEY
-        },
-        credentials: 'include',
-        body: JSON.stringify(addressPayload)
-    });
-    
-    if (!addressResponse.ok) {
-        const errorData = await addressResponse.json().catch(() => ({}));
-        console.error('❌ Shipping address error response:', errorData);
-        throw new Error(`Failed to add shipping address: ${addressResponse.status} ${addressResponse.statusText}. ${errorData.message || ''}`);
-    }
-    
-    const addressData = await addressResponse.json();
-    return addressData.cart || addressData;
-}
-
-// Add shipping method to cart
-async function addShippingMethodToCart(cartId) {
-    try {        
-        // Try the standard Medusa v2 endpoint first
-        let optionsUrl = `${MEDUSA_API_URL}/store/shipping-options?cart_id=${cartId}`;
-        
-        let optionsResponse = await fetch(optionsUrl, {
-            method: 'GET',
-            headers: {
-                'x-publishable-api-key': PUBLISHABLE_API_KEY
-            },
-            credentials: 'include'
-        });       
-        // If standard endpoint fails, try alternative v2 endpoint
-        
-        // If both fail, try cart-level shipping options
-        if (!optionsResponse.ok) {
-            optionsUrl = `${MEDUSA_API_URL}/store/carts/${cartId}`;
-            
-            optionsResponse = await fetch(optionsUrl, {
-                method: 'GET',
-                headers: {
-                    'x-publishable-api-key': PUBLISHABLE_API_KEY
-                },
-                credentials: 'include'
-            });
-        }
-        if (!optionsResponse.ok) {
-            const errorData = await optionsResponse.json().catch(() => ({}));
-            console.error('❌ Shipping options error response:', errorData);
-            throw new Error(`Failed to fetch shipping options: ${optionsResponse.status} ${optionsResponse.statusText}. ${errorData.message || ''}`);
-        }
-        
-        const optionsData = await optionsResponse.json();
-        // Handle different response formats from different endpoints
-        let shippingOptions = [];
-        
-        if (optionsData.shipping_options) {
-            // Standard format
-            shippingOptions = optionsData.shipping_options;
-        } else if (optionsData.cart?.shipping_options) {
-            // Cart-level format
-            shippingOptions = optionsData.cart.shipping_options;
-        } else if (Array.isArray(optionsData)) {
-            // Direct array format
-            shippingOptions = optionsData;
-        } else if (optionsData.data?.shipping_options) {
-            // Data wrapper format
-            shippingOptions = optionsData.data.shipping_options;
-        } else {
-            console.warn('⚠️ Unknown shipping options response format');
-            
-            // Try to find any array in the response
-            for (const key in optionsData) {
-                if (Array.isArray(optionsData[key])) {
-                    shippingOptions = optionsData[key];
-                    break;
-                }
-            }
-        }
-        
-        if (shippingOptions.length === 0) {
-            console.warn('⚠️ No shipping options found, checking if cart has shipping methods...');
-            if (shippingOptions.length === 0) {
-    throw new Error('No shipping options available for this cart');
-}
-        }
-        
-        // Find a suitable shipping option (prefer flat rate standard shipping)
-        let selectedOption = shippingOptions.find(option => 
-            option.name.toLowerCase().includes('standard') || 
-            option.name.toLowerCase().includes('manual') ||
-            option.price_type === 'flat'
-        );
-        
-        // If no preferred option found, use the first available option
-        if (!selectedOption) {
-            selectedOption = shippingOptions[0];
-        }
-        
-        // Add the selected shipping method to cart
-        const shippingResponse = await fetch(`${MEDUSA_API_URL}/store/carts/${cartId}/shipping-methods`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-publishable-api-key': PUBLISHABLE_API_KEY
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                option_id: selectedOption.id,
-                data: {} // Additional data if required
-            })
-        });
-        
-        if (!shippingResponse.ok) {
-            const errorData = await shippingResponse.json().catch(() => ({}));
-            throw new Error(`Failed to add shipping method: ${shippingResponse.status} ${shippingResponse.statusText}. ${errorData.message || ''}`);
-        }
-        
-        const shippingData = await shippingResponse.json();
-        
-    } catch (error) {
-        console.error('❌ Error adding shipping method:', error);
-        throw error;
-    }
-}
-
 // Complete checkout with manual payment
-async function completeCheckout(cartId) {
+async function completeCheckout() {
 
     try {
 
@@ -2527,10 +2252,6 @@ await fetch(
                             );
                         }
 
-                        console.log(
-                            "Backend Order Saved:",
-                            backendData
-                        );
 
                         // CLEAR CART
 
@@ -2545,10 +2266,13 @@ await fetch(
                         // IMPORTANT RETURN
 
                         resolve({
-                            order: backendData.order || backendData,
-                            paymentId:
-                                response.razorpay_payment_id
-                        });
+    order: backendData.order || backendData,
+    paymentId:
+        response.razorpay_payment_id,
+
+    totalAmount:
+        checkoutState.grandTotal
+});
 
                         // REDIRECT
 

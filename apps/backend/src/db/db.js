@@ -6,7 +6,7 @@ const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: 'ecommerce_custom_db',
-  password: process.env.DB_PASSWORD || '@Ishagm1',
+  password: process.env.DB_PASSWORD || '@Isha',
   port: process.env.DB_PORT || 5432,
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
@@ -15,7 +15,7 @@ const pool = new Pool({
 
 // Test database connection
 pool.on('connect', () => {
-  console.log('Connected to PostgreSQL database');
+  console.log('C');
 });
 
 pool.on('error', (err) => {
@@ -55,7 +55,7 @@ const transaction = async (callback) => {
 // Close connection pool
 const closePool = async () => {
   await pool.end();
-  console.log('Database connection pool closed');
+  console.log('D');
 };
 
 module.exports = {

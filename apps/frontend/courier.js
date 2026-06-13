@@ -20,17 +20,7 @@ let allOrders = [];
 let filteredShipments = [];
 let currentView = "cards";
 
-const DELIVERY_STATUSES = [
-    "assigned",
-    "shipped",
-    "in_transit",
-    "out_for_delivery",
-    "delivered"
-];
-
-// =========================
 // INITIALIZE
-// =========================
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -207,9 +197,8 @@ async function updateShipmentStatus(
                 },
 
                 body: JSON.stringify({
-
-    order_status: status
-})
+                    status
+                })
             }
         );
 
@@ -247,7 +236,6 @@ async function updateShipmentStatus(
 
 async function saveTrackingDetails(orderId) {
 
-    console.log("ORDER ID =", orderId);
 
     const trackingInput =
         document.getElementById(
@@ -264,10 +252,6 @@ async function saveTrackingDetails(orderId) {
         document.getElementById(
             `card-partner-${orderId}`
         );
-
-    console.log("TRACKING INPUT:", trackingInput);
-    console.log("PARTNER INPUT:", partnerInput);
-
     if (!trackingInput || !partnerInput) {
 
         showNotification(
@@ -277,16 +261,6 @@ async function saveTrackingDetails(orderId) {
 
         return;
     }
-
-    console.log(
-        "TRACKING VALUE:",
-        trackingInput.value
-    );
-
-    console.log(
-        "PARTNER VALUE:",
-        partnerInput.value
-    );
 
     const trackingId =
         trackingInput.value.trim();
@@ -304,7 +278,6 @@ async function saveTrackingDetails(orderId) {
 
 const trackingStatus =
     statusInput?.value;
-
     if (!trackingId || !courierPartner) {
 
         showNotification(
@@ -341,11 +314,6 @@ const trackingStatus =
 
         const data =
         await response.json();
-
-        console.log(
-            "SAVE RESPONSE:",
-            data
-        );
 
         if (data.success) {
 
@@ -599,24 +567,26 @@ function updateSummaryCards() {
         filteredShipments.length;
 
     const inTransit =
-        filteredShipments.filter(
-            o => o.deliveryStatus === "in_transit"
-        ).length;
+    filteredShipments.filter(
+        o => o.deliveryStatus === "In Transit"
+    ).length;
 
-    const outForDelivery =
-        filteredShipments.filter(
-            o => o.deliveryStatus === "out_for_delivery"
-        ).length;
+const outForDelivery =
+    filteredShipments.filter(
+        o => o.deliveryStatus === "Out For Delivery"
+    ).length;
 
-    const delivered =
-        filteredShipments.filter(
-            o => o.deliveryStatus === "delivered"
-        ).length;
+const delivered =
+    filteredShipments.filter(
+        o => o.deliveryStatus === "Delivered"
+    ).length;
 
-    const pending =
-        filteredShipments.filter(
-            o => o.deliveryStatus === "assigned"
-        ).length;
+const pending =
+    filteredShipments.filter(
+        o =>
+            o.deliveryStatus === "pending" ||
+            o.deliveryStatus === "Order Placed"
+    ).length;
 
     updateElement(
         "totalShipmentsCount",
@@ -785,17 +755,31 @@ function renderCardsView() {
                         value="${order.trackingId || ""}"
                         placeholder="Tracking ID"
                     >
-                    <select
+         <select
     class="manual-input status-dropdown"
     id="card-status-${order.id}"
 >
-    <option value="Order Placed">Order Placed</option>
-    <option value="Picked Up">Picked Up</option>
-    <option value="In Transit">In Transit</option>
-    <option value="Out For Delivery">Out For Delivery</option>
-    <option value="Delivered">Delivered</option>
-    <option value="Failed Delivery">Failed Delivery</option>
-</select>
+    <option value="Order Placed" ${order.deliveryStatus === "Order Placed" ? "selected" : ""}>Order Placed</option>
+
+    <option value="Picked Up" ${order.deliveryStatus === "Picked Up" ? "selected" : ""}>Picked Up</option>
+
+    <option value="In Transit" ${order.deliveryStatus === "In Transit" ? "selected" : ""}>In Transit</option>
+
+    <option value="Out For Delivery" ${order.deliveryStatus === "Out For Delivery" ? "selected" : ""}>Out For Delivery</option>
+
+    <option value="Delivered" ${order.deliveryStatus === "Delivered" ? "selected" : ""}>Delivered</option>
+
+    <option value="Failed Delivery" ${order.deliveryStatus === "Failed Delivery" ? "selected" : ""}>Failed Delivery</option>
+<option value="pending"
+${order.deliveryStatus === "pending" ? "selected" : ""}>
+pending
+</option>
+
+<option value="shipped"
+${order.deliveryStatus === "shipped" ? "selected" : ""}>
+shipped
+</option>
+    </select>
 
                     <button
                         class="action-btn save-manual-btn"
@@ -832,7 +816,6 @@ function renderTableView() {
 
         const row =
         document.createElement("tr");
-
         row.innerHTML = `
 
             <td>${order.orderId}</td>
@@ -867,15 +850,29 @@ function renderTableView() {
 
 <td>
     <select
-        class="manual-input status-dropdown"
-        id="table-status-${order.id}"
-    >
-        <option value="Order Placed">Order Placed</option>
-        <option value="Picked Up">Picked Up</option>
-        <option value="In Transit">In Transit</option>
-        <option value="Out For Delivery">Out For Delivery</option>
-        <option value="Delivered">Delivered</option>
-        <option value="Failed Delivery">Failed Delivery</option>
+    class="manual-input status-dropdown"
+    id="card-status-${order.id}"
+>
+    <option value="Order Placed" ${order.deliveryStatus === "Order Placed" ? "selected" : ""}>Order Placed</option>
+
+    <option value="Picked Up" ${order.deliveryStatus === "Picked Up" ? "selected" : ""}>Picked Up</option>
+
+    <option value="In Transit" ${order.deliveryStatus === "In Transit" ? "selected" : ""}>In Transit</option>
+
+    <option value="Out For Delivery" ${order.deliveryStatus === "Out For Delivery" ? "selected" : ""}>Out For Delivery</option>
+
+    <option value="Delivered" ${order.deliveryStatus === "Delivered" ? "selected" : ""}>Delivered</option>
+
+    <option value="Failed Delivery" ${order.deliveryStatus === "Failed Delivery" ? "selected" : ""}>Failed Delivery</option>
+<option value="pending"
+${order.deliveryStatus === "pending" ? "selected" : ""}>
+pending
+</option>
+
+<option value="shipped"
+${order.deliveryStatus === "shipped" ? "selected" : ""}>
+shipped
+</option>
     </select>
 </td>
 

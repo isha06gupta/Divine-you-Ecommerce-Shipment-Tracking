@@ -1944,11 +1944,3 @@ const password =document.getElementById(
         );
     }
 }
-
-function openMedusaAdmin() {
-
-    window.open(
-        "http://localhost:9000/app",
-        "_blank"
-    );
-}

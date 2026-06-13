@@ -12,6 +12,8 @@ require("./routes/trackingRoutes");
 
 const userRoutes =
 require("./routes/userRoutes");
+const productRoutes =
+require("./routes/productRoutes");
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.use(
 app.use( "/api/orders",orderRoutes );
 
 app.use( "/api/users",userRoutes);
+app.use("/api/products", productRoutes);
 
 app.use("/api/tracking", trackingRoutes );
 

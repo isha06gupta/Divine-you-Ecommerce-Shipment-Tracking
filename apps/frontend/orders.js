@@ -4,8 +4,6 @@ const ordersContainer =
 const orders =
     JSON.parse(localStorage.getItem("orders")) || [];
 
-console.log("Orders:", orders);
-
 if (orders.length === 0) {
 
     ordersContainer.innerHTML =
