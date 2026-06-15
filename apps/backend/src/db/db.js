@@ -3,15 +3,23 @@ require('dotenv').config();
 
 // PostgreSQL connection pool
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: 'ecommerce_custom_db',
-  password: process.env.DB_PASSWORD || '@Isha',
-  port: process.env.DB_PORT || 5432,
-  max: 20, // maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
-  connectionTimeoutMillis: 2000, // how long to wait when connecting a new client
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+
+  ssl: {
+    rejectUnauthorized: false,
+  },
+
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
+pool.connect()
+  .then(() => console.log("✅ Connected to Neon"))
+  .catch(err => console.error("❌ Neon Connection Error:", err));
 
 // Test database connection
 pool.on('connect', () => {

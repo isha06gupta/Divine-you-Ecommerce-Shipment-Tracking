@@ -22,14 +22,13 @@ const addressRoutes =require("./routes/addressRoutes");
 const path = require("path");
 
 app.use(cors({
-    origin: [
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "http://localhost:3000",
-        "http://localhost:7000"
-    ],
+    origin: true,
     credentials: true
 }));
+
+app.get('/healthz', (req, res) => {
+    res.status(200).send('OK');
+});
 
 app.use(express.json());
 app.use(
