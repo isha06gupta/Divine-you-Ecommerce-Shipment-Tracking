@@ -86,7 +86,7 @@ function fetchProducts() {
     productGrid.innerHTML =
         '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Loading Products...</div>';
 
-    fetch("http://localhost:7000/api/products")
+    fetch("https://divine-you-ecommerce-shipment-tracking.onrender.com/api/products")
 
     .then(response => {
 
@@ -991,7 +991,7 @@ async function handleLogin(event) {
 
         const response =
             await fetch(
-                "http://localhost:7000/api/users/login",
+                "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/login",
                 {
                     method: "POST",
 
@@ -1137,7 +1137,7 @@ async function handleRegister(event) {
 
         const response =
         await fetch(
-            "http://localhost:7000/api/users/register",
+            "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/register",
             {
                 method: "POST",
 
@@ -1469,7 +1469,7 @@ async function loadAddresses() {
     try {
 
         const response = await fetch(
-            `http://localhost:7000/api/address/${currentUser.id}`
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/address/${currentUser.id}`
         );
 
         const data =
@@ -1626,7 +1626,7 @@ async function deleteAddress(addressId) {
 
         const response =
         await fetch(
-            `http://localhost:7000/api/address/${addressId}`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/address/${addressId}`,
             {
                 method: "DELETE"
             }
@@ -1792,7 +1792,7 @@ async function createAddress(addressData) {
     try {
 
         const response = await fetch(
-            "http://localhost:7000/api/address/create",
+            "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/address/create",
             {
                 method: "POST",
 
@@ -1853,7 +1853,7 @@ async function updateAddress(
 
         const response =
         await fetch(
-            `http://localhost:7000/api/address/${addressId}`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/address/${addressId}`,
             {
                 method: "PUT",
 
@@ -2223,7 +2223,7 @@ localStorage.getItem(
 
 const backendResponse =
 await fetch(
-    "http://localhost:7000/api/orders",
+    "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders",
     {
         method: "POST",
 

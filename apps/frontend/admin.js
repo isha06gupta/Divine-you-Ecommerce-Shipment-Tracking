@@ -55,7 +55,7 @@ async function loadCouriers() {
 
         const response =
         await fetch(
-    "http://localhost:7000/api/users/couriers",
+    "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/couriers",
     {
         headers:{
             "Authorization": `Bearer ${token}`
@@ -89,7 +89,7 @@ async function loadOrders() {
     try {
 
         const response = await fetch(
-    "http://localhost:7000/api/orders",
+    "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders",
     {
         headers:{
             "Authorization": `Bearer ${token}`
@@ -667,7 +667,7 @@ async function updateOrderStatus(orderId, newStatus) {
 
         // UPDATE ORDER STATUS
         await fetch(
-            `http://localhost:7000/api/orders/${order.id}/status`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders/${order.id}/status`,
             {
                 method: "PUT",
                 headers: {
@@ -722,7 +722,7 @@ async function updateOrderStatus(orderId, newStatus) {
 
         // INSERT TRACKING ENTRY
         await fetch(
-            "http://localhost:7000/api/tracking",
+            "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/tracking",
             {
                 method: "POST",
                 headers: {
@@ -772,7 +772,7 @@ async function updateCourierCompany(orderId, newCourier) {
     try {
 
         const response = await fetch(
-            `http://localhost:7000/api/orders/${orderId}/courier`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders/${orderId}/courier`,
             {
                 method: "PUT",
                 headers: {
@@ -837,7 +837,7 @@ async function assignCourierPerson(
 
         const response =
         await fetch(
-            `http://localhost:7000/api/orders/${orderId}/courier`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders/${orderId}/courier`,
             {
                 method: "PUT",
 
@@ -1886,7 +1886,7 @@ const password =document.getElementById(
 
         const response =
             await fetch(
-                "http://localhost:7000/api/users/register",
+                "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/register",
                 {
                     method: "POST",
 

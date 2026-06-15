@@ -57,7 +57,7 @@ async function loadOrders() {
 
         const response =
         await fetch(
-    "http://localhost:7000/api/orders",
+    "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders",
     {
         headers:{
             "Authorization": `Bearer ${token}`
@@ -186,7 +186,7 @@ async function updateShipmentStatus(
 
         const response =
         await fetch(
-            `http://localhost:7000/api/orders/${orderId}/status`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders/${orderId}/status`,
             {
                 method: "PUT",
 
@@ -292,7 +292,7 @@ const trackingStatus =
 
         const response =
         await fetch(
-            `http://localhost:7000/api/orders/${orderId}/shipment`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders/${orderId}/shipment`,
             {
                 method: "PUT",
 

@@ -43,7 +43,7 @@ function loadUserData() {
     if(currentUser.profile_photo){
 
         avatarInitials.innerHTML =
-        `<img src="http://localhost:7000${currentUser.profile_photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+        `<img src="https://divine-you-ecommerce-shipment-tracking.onrender.com${currentUser.profile_photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
 
     } else {
 
@@ -58,7 +58,7 @@ async function loadStats() {
 
         const response =
         await fetch(
-    `http://localhost:7000/api/users/${currentUser.id}/stats`,
+    `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/${currentUser.id}/stats`,
     {
         headers:{
             "Authorization": `Bearer ${token}`
@@ -148,7 +148,7 @@ document.getElementById("accountForm").addEventListener("submit", async function
 
             const passwordResponse =
             await fetch(
-                `http://localhost:7000/api/users/${currentUser.id}/password`,
+                `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/${currentUser.id}/password`,
                 {
                     method:"PUT",
 
@@ -180,7 +180,7 @@ document.getElementById("accountForm").addEventListener("submit", async function
         // CUSTOMER TABLE UPDATE
         const response =
         await fetch(
-            `http://localhost:7000/api/users/${currentUser.id}`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/${currentUser.id}`,
             {
                 method:"PUT",
 
@@ -207,7 +207,7 @@ document.getElementById("accountForm").addEventListener("submit", async function
 
         // SHIPMENT ADDRESS UPDATE
         await fetch(
-            `http://localhost:7000/api/address/update/${currentUser.id}`,
+            `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/address/update/${currentUser.id}`,
             {
                 method:"PUT",
 
@@ -293,7 +293,7 @@ document.getElementById("profileUpload").addEventListener(
 
             const response =
             await fetch(
-                `http://localhost:7000/api/users/${currentUser.id}/photo`,
+                `https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/${currentUser.id}/photo`,
                 {
                     method:"POST",body:formData,headers:{
     "Authorization": `Bearer ${token}`
@@ -306,7 +306,7 @@ document.getElementById("profileUpload").addEventListener(
             if(data.success){
 
                 avatarInitials.innerHTML =
-                `<img src="http://localhost:7000${data.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+                `<img src="https://divine-you-ecommerce-shipment-tracking.onrender.com${data.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
 
                 const updatedUser = {
                     ...currentUser,
