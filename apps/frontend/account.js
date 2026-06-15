@@ -28,8 +28,6 @@ loadStats();
 
 function loadUserData() {
 
-     console.log("CURRENT USER =", currentUser);
-
     firstName.value = currentUser.first_name || "";
     lastName.value = currentUser.last_name || "";
     email.value = currentUser.email || "";

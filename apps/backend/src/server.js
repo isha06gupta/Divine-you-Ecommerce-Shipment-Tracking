@@ -53,7 +53,4 @@ const PORT =
 
 app.listen(PORT, () => {
 
-    console.log(
-        `Custom API running on port ${PORT}`
-    );
 });

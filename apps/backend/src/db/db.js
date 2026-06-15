@@ -18,12 +18,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 pool.connect()
-  .then(() => console.log("✅ Connected to Neon"))
-  .catch(err => console.error("❌ Neon Connection Error:", err));
+  .then(() => console.log("Connected to Neon"))
+  .catch(err => console.error("Neon Connection Error:", err));
 
 // Test database connection
 pool.on('connect', () => {
-  console.log('C');
 });
 
 pool.on('error', (err) => {
