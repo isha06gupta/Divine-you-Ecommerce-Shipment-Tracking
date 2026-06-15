@@ -28,6 +28,8 @@ loadStats();
 
 function loadUserData() {
 
+     console.log("CURRENT USER =", currentUser);
+
     firstName.value = currentUser.first_name || "";
     lastName.value = currentUser.last_name || "";
     email.value = currentUser.email || "";
@@ -81,10 +83,20 @@ async function loadStats() {
 
             if(data.address){
 
-                city.value = data.address.city || "";
-                state.value = data.address.province || "";
-                pincode.value = data.address.postal_code || "";
-            }
+    phone.value = data.address.phone || "";
+
+    address.value =
+    data.address.address_1 || "";
+
+    city.value =
+    data.address.city || "";
+
+    state.value =
+    data.address.province || "";
+
+    pincode.value =
+    data.address.postal_code || "";
+}
         }
 
     } catch(error){
