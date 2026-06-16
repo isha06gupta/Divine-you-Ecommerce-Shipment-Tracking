@@ -83,7 +83,7 @@ async function loadOrders() {
     try {
 
         const response = await fetch(
-    "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/orders",
+    "https://divine-you.onrender.com/api/orders",
     {
         headers:{
             "Authorization": `Bearer ${token}`

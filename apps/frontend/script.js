@@ -302,7 +302,7 @@ async function handleLogin(event) {
     try {
 
         const response = await fetch(
-            "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/login",
+            "https://divine-you.onrender.com/api/users/login",
             {
                 method: "POST",
 
@@ -408,7 +408,7 @@ async function handleRegister(event) {
     try {
 
         const response = await fetch(
-            "https://divine-you-ecommerce-shipment-tracking.onrender.com/api/users/register",
+            "https://divine-you.onrender.com/api/users/register",
             {
                 method: "POST",
 
